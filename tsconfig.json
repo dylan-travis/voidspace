@@ -21,6 +21,6 @@
     "next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "pages/booking.jsx", "components/TimePicker.tsx", "lib/mongodb.js"  ],
   "exclude": ["node_modules"]
 }

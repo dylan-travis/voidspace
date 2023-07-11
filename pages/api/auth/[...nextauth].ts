@@ -5,6 +5,7 @@ import GithubProvider from "next-auth/providers/github"
 import TwitterProvider from "next-auth/providers/twitter"
 import Auth0Provider from "next-auth/providers/auth0"
 
+
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export const authOptions: NextAuthOptions = {
@@ -33,12 +34,12 @@ export const authOptions: NextAuthOptions = {
       version: "2.0",
     }),
   ],
-  callbacks: {
-    async jwt({ token }) {
-      token.userRole = "admin"
-      return token
-    },
-  },
+  // callbacks: {
+  //   async jwt({ token }) {
+  //     token.userRole = "admin"
+  //     return token
+  //   },
+  debug: true,
 }
 
 export default NextAuth(authOptions)
