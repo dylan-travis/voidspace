@@ -1,11 +1,13 @@
-export default function IndexPage() {
+import React from 'react';
+import Hero from '../components/Hero';
+import Content from '../components/Content';
+
+export default function Index() {
   return (
     <>
-      <h1 className="text-4xl">NextAuth.js Example</h1>
-      <p>
-        This is an example site to demonstrate how to use{" "}
-        <a href="https://next-auth.js.org">NextAuth.js</a> for authentication.
-      </p>
+      <Hero />
+      <hr />
+      <Content />
     </>
-  )
+  );
 }

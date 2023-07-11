@@ -1,3 +1,4 @@
+import React from 'react';
 import { Menu, Transition } from '@headlessui/react'
 import { DotsVerticalIcon } from '@heroicons/react/outline'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
@@ -17,6 +18,9 @@ import {
 } from 'date-fns'
 import { Fragment, useState, useEffect } from 'react'
 import TimePicker from '../components/TimePicker'
+import { useSession, getSession } from "next-auth/react"
+
+
 
 
 
@@ -25,14 +29,12 @@ function classNames(...classes) {
 }
 
 // Grabs bookings from DB
-async function getServerSideProps() {
+export async function getServerSideProps() {
     try {
         let response = await fetch('http://localhost:3000/api/getBookings');
-        let bookings = await response.json();
-        console.log(bookings)
-        return {
-            props: { bookings: JSON.parse(JSON.stringify(bookings)) },
-        };
+        const bookings = await response.json();
+        // console.log(bookings)
+        return { props: { bookings } };
     } catch (e) {
         console.error(e);
     }
@@ -41,7 +43,8 @@ async function getServerSideProps() {
 
 
 // Displays calendar and booked appointments
-export default function Calendar() {
+export default function Calendar({ bookings }) {
+    const { data: session, status } = useSession()
     let today = startOfToday()
     let [selectedDay, setSelectedDay] = useState(today)
     const [filteredBookings, setFilteredBookings] = useState([]);
@@ -54,15 +57,14 @@ export default function Calendar() {
         end: endOfMonth(firstDayCurrentMonth),
     });
 
-
     // Updates Calendar state from Timepicker - establishes a connection between the two components
     async function updateCalendarState() {
         // Logic to update the state in the Calendar component
-        const { props } = await getServerSideProps();
-        // console.log("updateCalendarState props object is " + JSON.stringify(props))
-        setFilteredBookings(props.bookings.filter((meeting) =>
+        // const { props } = await getServerSideProps();
+        console.log("updateCalendarState props object is " + JSON.stringify(bookings))
+        setFilteredBookings(bookings.filter((meeting) =>
             isSameDay(parseISO(meeting.date), selectedDay)));
-    };
+    }
 
     // Deletes meeting from DB
     const handleDeleteMeeting = (bookingId) => {
@@ -75,9 +77,8 @@ export default function Calendar() {
     useEffect(() => {
         async function logBookings() {
             try {
-                const { props } = await getServerSideProps();
-                const allBookings = props.bookings;
-                const selectedDayBookings = props.bookings.filter((meeting) =>
+                const allBookings = bookings;
+                const selectedDayBookings = bookings.filter((meeting) =>
                     isSameDay(parseISO(meeting.date), selectedDay)
                 );
                 setAllBookings(allBookings);
@@ -100,10 +101,16 @@ export default function Calendar() {
         setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'))
     }
 
+    if (status === "loading") {
+        return <p>Loading...</p>
+    }
+    if (status === "unauthenticated") {
+        return <p>Access Denied</p>
+    }
 
     return (
         <div>
-            <h1 className="text-center text-4xl font-bold pb-5">Booking</h1>
+            <h1 className="text-center text-4xl font-bold pt-5 pb-5">Booking</h1>
             <div className="max-w-md px-4 mx-auto sm:px-7 md:max-w-4xl md:px-6">
                 <div className="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
                     <div className="md:pr-14">
@@ -218,7 +225,6 @@ export default function Calendar() {
 function Meeting({ meeting, handleDeleteMeeting }) {
     let startDateTime = parseISO(meeting.date)
     let endDateTime = parseISO(meeting.endDatetime)
-
 
     const handleDeleteBooking = async (bookingId) => {
         try {
