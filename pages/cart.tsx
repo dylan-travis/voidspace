@@ -5,6 +5,7 @@ import Head from 'next/head';
 import axios from 'axios';
 import getStripe from './get-stripe';
 import DeleteIcon from '@mui/icons-material/Delete';
+import React from 'react';
 
 const cartDetails = {
     'price_1NQcKtK1A3hq7BalXT5wvjyv': {
@@ -59,6 +60,10 @@ const cartDetails = {
 const Cart = () => {
     const [redirecting, setRedirecting] = useState(false);
 
+    function removeItem(product, quantity){
+        console.log("remove " + product + quantity)
+    }
+
     const redirectToCheckout = async () => {
         // Create Stripe checkout
         const {
@@ -73,8 +78,6 @@ const Cart = () => {
         // Redirect to checkout
         const stripe = await getStripe();
         await stripe.redirectToCheckout({ sessionId: id });
-
-        console.log(cartDetails.length)
 
     };
 

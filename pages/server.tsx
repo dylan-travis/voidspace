@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "./api/auth/[...nextauth]"
-import Layout from "../components/layout"
+import Layout from "../components/Layout"
 
 import type { GetServerSidePropsContext } from "next"
 import { useSession } from "next-auth/react"

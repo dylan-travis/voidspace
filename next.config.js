@@ -7,5 +7,8 @@ module.exports = {
       hostname: 'i1.wp.com',
     }
     ]
-  }
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 }

@@ -28,59 +28,59 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
         setIsModalOpen(true);
     };
 
-    const handleBookingSubmit = async (e: any) => {
+    const handleBookingSubmit = async (e) => {
         e.preventDefault();
         try {
-        const title = e.target.elements.title.value;
-        const name = e.target.elements.name.value;
-        const description = e.target.elements.description.value;
-        let response = await fetch("http://localhost:3000/api/addBooking", {
-            method: "POST",
-            body: JSON.stringify({
-                id: Math.random().toString(36).substr(2, 9),
-                name,
-                date: selectedDay,
-                hour: selectedHour,
-                title,
-                description,
-            }),
-            headers: {
-            Accept: "application/json, text/plain, */*",
-            "Content-Type": "application/json",
-            },
-        });
-        response = await response.json();
-        console.log("response from handleBookingSubmit" + JSON.stringify(response))
-        // Invoke the updateCalendarState prop to trigger the state update in the Calendar component
-        updateCalendarState(response);
-        } catch (errorMessage: any) {
-        console.error(errorMessage);
+            const title = e.target.elements.title.value;
+            const name = e.target.elements.name.value;
+            const description = e.target.elements.description.value;
+            let response = await fetch("http://localhost:3000/api/addBooking", {
+                method: "POST",
+                body: JSON.stringify({
+                    id: Math.random().toString(36).substr(2, 9),
+                    name,
+                    date: selectedDay,
+                    hour: selectedHour,
+                    title,
+                    description,
+                }),
+                headers: {
+                    Accept: "application/json, text/plain, */*",
+                    "Content-Type": "application/json",
+                },
+            });
+            response = await response.json();
+            console.log("response from handleBookingSubmit" + JSON.stringify(response))
+            // Invoke the updateCalendarState prop to trigger the state update in the Calendar component
+            updateCalendarState(response);
+        } catch (errorMessage) {
+            console.error(errorMessage);
         }
     };
 
-        // Logic for rendering out buttons for each hour
+    // Logic for rendering out buttons for each hour
     const renderHoursButtons = () => {
-    const hours = Array.from({ length: 5 }, (_, i) => 12 + i * 2); // Generate hours from 15 to 21
+        const hours = Array.from({ length: 5 }, (_, i) => 12 + i * 2); // Generate hours from 15 to 21
 
-    // This maps out the hours array and returns a button for each hour
-    // Needs conditional logic for disabling the button if the hour is already booked
-    return hours.map((hour) => {
-        const isBooked = bookedHours.includes(hour);
-    
-        return (
-            <button
-            key={hour}
-            className={`bg-black hover:bg-gray-500 text-white font-bold py-2 px-4 rounded ${isBooked ? 'disabled bg-gray-300 hover:bg-gray-300' : ''}`}
-            onClick={() => handleHourClick(hour)}
-            disabled={isBooked}
-            >
-            {format(new Date().setHours(hour, 0), 'HH:mm')}
-            </button>
-        );
+        // This maps out the hours array and returns a button for each hour
+        // Needs conditional logic for disabling the button if the hour is already booked
+        return hours.map((hour) => {
+            const isBooked = bookedHours.includes(hour);
+
+            return (
+                <button
+                    key={hour}
+                    className={`bg-black hover:bg-gray-500 text-white font-bold py-2 px-4 rounded ${isBooked ? 'disabled bg-gray-300 hover:bg-gray-300' : ''}`}
+                    onClick={() => handleHourClick(hour)}
+                    disabled={isBooked}
+                >
+                    {format(new Date().setHours(hour, 0), 'HH:mm')}
+                </button>
+            );
         });
     };
-      
-      
+
+
 
     return (
         <div>
