@@ -58,12 +58,24 @@ export default function Calendar({ bookings }) {
     });
 
     // Updates Calendar state from Timepicker - establishes a connection between the two components
-    async function updateCalendarState() {
+    async function updateCalendarState(response) {
         // Logic to update the state in the Calendar component
-        // const { props } = await getServerSideProps();
-        console.log("updateCalendarState props object is " + JSON.stringify(bookings))
-        setFilteredBookings(bookings.filter((meeting) =>
-            isSameDay(parseISO(meeting.date), selectedDay)));
+        // Update the bookings state with the new meeting from the response (if available)
+        if (response) {
+            let newResponse = await fetch('http://localhost:3000/api/getBookings');
+            const updatedBookings = await newResponse.json();
+            console.log(updatedBookings)
+            setAllBookings([...allBookings, updatedBookings]); // Add the new meeting to the existing bookings array
+            console.log("All Bookings is now: " + JSON.stringify(allBookings))
+            setFilteredBookings(updatedBookings.filter((meeting) =>
+                isSameDay(parseISO(meeting.date), selectedDay)));
+        }
+        else {
+            setFilteredBookings(bookings.filter((meeting) =>
+                isSameDay(parseISO(meeting.date), selectedDay)));
+
+            logBookings(bookings, selectedDay);
+        }
     }
 
     // Deletes meeting from DB
@@ -73,20 +85,21 @@ export default function Calendar({ bookings }) {
         );
     };
 
+    async function logBookings() {
+        try {
+            const allBookings = bookings;
+            const selectedDayBookings = bookings.filter((meeting) =>
+                isSameDay(parseISO(meeting.date), selectedDay)
+            );
+            setAllBookings(allBookings);
+            setFilteredBookings(selectedDayBookings);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     // Filtering logic for bookings goes here - looks at the selected day and pulls all meetings that match that day. This is the setFilteredBookings object.
     useEffect(() => {
-        async function logBookings() {
-            try {
-                const allBookings = bookings;
-                const selectedDayBookings = bookings.filter((meeting) =>
-                    isSameDay(parseISO(meeting.date), selectedDay)
-                );
-                setAllBookings(allBookings);
-                setFilteredBookings(selectedDayBookings);
-            } catch (e) {
-                console.error(e);
-            }
-        }
 
         logBookings();
     }, [selectedDay]);
@@ -206,7 +219,7 @@ export default function Calendar({ bookings }) {
                             {/* here is where we loop over the meetings */}
                             {filteredBookings.length > 0 ? (
                                 filteredBookings.map((meeting) => (
-                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting._id} />
+                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting._id} updateCalendarState={updateCalendarState} />
                                 ))
                             ) : (
                                 <p>No bookings today.</p>
