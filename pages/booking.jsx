@@ -21,9 +21,6 @@ import TimePicker from '../components/TimePicker'
 import { useSession, getSession } from "next-auth/react"
 
 
-
-
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
@@ -57,16 +54,17 @@ export default function Calendar({ bookings }) {
         end: endOfMonth(firstDayCurrentMonth),
     });
 
-    // Updates Calendar state from Timepicker - establishes a connection between the two components
+    // Updates Calendar state from Timepicker - establishes a connection between the two components in order to show new meetings as they are created.
     async function updateCalendarState(response) {
         // Logic to update the state in the Calendar component
         // Update the bookings state with the new meeting from the response (if available)
         if (response) {
             let newResponse = await fetch('http://localhost:3000/api/getBookings');
             const updatedBookings = await newResponse.json();
-            console.log(updatedBookings)
-            setAllBookings([...allBookings, updatedBookings]); // Add the new meeting to the existing bookings array
-            console.log("All Bookings is now: " + JSON.stringify(allBookings))
+            // Add the new meeting to the existing allBookings array using spread operator
+            setAllBookings([...allBookings, updatedBookings]);
+            // Takes the updatedBookings array and filters it to only show the meetings that match the selected day
+            // console.log("All Bookings is now: " + JSON.stringify(allBookings))
             setFilteredBookings(updatedBookings.filter((meeting) =>
                 isSameDay(parseISO(meeting.date), selectedDay)));
         }
@@ -85,6 +83,7 @@ export default function Calendar({ bookings }) {
         );
     };
 
+    // Filtering logic for bookings goes here - looks at the selected day and pulls all meetings that match that day. This is the setFilteredBookings object.
     async function logBookings() {
         try {
             const allBookings = bookings;
@@ -97,13 +96,13 @@ export default function Calendar({ bookings }) {
             console.error(e);
         }
     }
-
-    // Filtering logic for bookings goes here - looks at the selected day and pulls all meetings that match that day. This is the setFilteredBookings object.
+    // Note that logBookings is asynchronously called in several locations in this file. This is because we need to wait for the bookings to be fetched from the DB before we can filter them.
     useEffect(() => {
 
         logBookings();
     }, [selectedDay]);
 
+    // Functions for navigating the calendar
     function previousMonth() {
         let firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 })
         setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'))
