@@ -73,7 +73,7 @@ export default function Calendar({ bookings }) {
         );
     };
 
-    // Filtering logic for bookings goes here
+    // Filtering logic for bookings goes here - looks at the selected day and pulls all meetings that match that day. This is the setFilteredBookings object.
     useEffect(() => {
         async function logBookings() {
             try {
@@ -197,7 +197,7 @@ export default function Calendar({ bookings }) {
                     </div>
                     <section className="mt-12 md:mt-0 md:pl-14">
                         <h2 className="font-semibold text-gray-900">
-                            Schedule for{' '}
+                            Bookings for{' '}
                             <time dateTime={format(selectedDay, 'yyyy-MM-dd')}>
                                 {format(selectedDay, 'MMM dd, yyy')}
                             </time>
@@ -209,7 +209,7 @@ export default function Calendar({ bookings }) {
                                     <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting._id} />
                                 ))
                             ) : (
-                                <p>No meetings for today.</p>
+                                <p>No bookings today.</p>
 
                             )}
                         </ol>

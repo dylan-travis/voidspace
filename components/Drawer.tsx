@@ -8,9 +8,13 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
+import CallIcon from '@mui/icons-material/Call';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -36,6 +40,26 @@ export default function TemporaryDrawer() {
                 setState({ ...state, [anchor]: open });
             };
 
+    const iconMapping = {
+        'Home': <HomeIcon />,
+        'Booking': <EditCalendarIcon />,
+        'Contact': <CallIcon />,
+        'Profile': <AccountCircleIcon />,
+        'Cart': <ShoppingCartIcon />,
+        'Logout': <LogoutIcon />
+        };
+
+        const linkMapping = {
+            'Home': '/',
+            'Booking': '/booking',
+            'Contact': '/contact',
+            'Profile': '/profile',
+            'Cart': '/cart',
+            'Logout': '/logout'
+            };
+
+              
+
     const list = (anchor: Anchor) => (
         <Box
             sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
@@ -44,11 +68,11 @@ export default function TemporaryDrawer() {
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <List>
-                {['Home', 'Booking', 'Contact', 'Register'].map((text, index) => (
+                {['Home', 'Booking', 'Contact', 'Profile'].map((text) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
                         </ListItemButton>
@@ -57,11 +81,11 @@ export default function TemporaryDrawer() {
             </List>
             <Divider />
             <List>
-                {['Bookings', 'Cart', 'Logout'].map((text, index) => (
+                {['Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
                         </ListItemButton>

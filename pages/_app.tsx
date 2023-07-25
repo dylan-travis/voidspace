@@ -5,18 +5,22 @@ import type { Session } from "next-auth"
 import Layout from "../components/Layout"
 import React from "react"
 import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from "@emotion/react" 
+import { ThemeProvider } from "@emotion/react"; 
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const theme = createTheme({
   palette: {
     primary: {
-      light: '#FFFFFF',
-      main: '#FFFFFF',
-      dark: '#002884',
-      contrastText: '#fff',
+      light: '#ffffff',
+      main: '#ffffff',
+      dark: '#ffffff',
+      contrastText: '#000000',
     },
     secondary: {
       main: '#000000',
+      contrastText: '#000000',
     },
   },
 });

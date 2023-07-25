@@ -6,6 +6,10 @@ import axios from 'axios';
 import getStripe from './get-stripe';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Button } from '@mui/material';
+import CheckoutForm from '../components/CheckoutForm';
+
 
 const cartDetails = {
     'price_1NQcKtK1A3hq7BalXT5wvjyv': {
@@ -22,40 +26,8 @@ const cartDetails = {
         selectedHourBegin: "10:00",
         selectedHourEnd: "12:00",
         day: "2023-10-10"
-    },
-    'price_1NQcKfK1A3hq7BalfjArBhHd': {
-        id: 'price_1NQcKfK1A3hq7BalfjArBhHd',
-        name: 'One Hour',
-        description: 'One hour booking',
-        image: 'https://i1.wp.com/cornellsun.com/wp-content/uploads/2020/06/1591119073-screen_shot_2020-06-02_at_10.30.13_am.png',
-        currency: 'USD',
-        price: 30,
-        formattedValue: '$30.00',
-        value: 1000,
-        quantity: 1,
-        totalPrice: "30.00",
-        selectedHourBegin: "12:00",
-        selectedHourEnd: "13:00",
-        day: "2023-10-10"
-    },
-    'price_1NQcL6K1A3hq7BalmelNWvQz': {
-        id: 'price_1NQcL6K1A3hq7BalmelNWvQz',
-        name: 'Four Hours',
-        description: 'Four hour booking',
-        image: 'https://i1.wp.com/cornellsun.com/wp-content/uploads/2020/06/1591119073-screen_shot_2020-06-02_at_10.30.13_am.png',
-        currency: 'USD',
-        price: 110,
-        formattedValue: '$110.00',
-        value: 1000,
-        quantity: 1,
-        totalPrice: "110.00",
-        selectedHourBegin: "14:00",
-        selectedHourEnd: "18:00",
-        day: "2023-10-10"
     }
 }
-
-// const cartDetails = {}
 
 const Cart = () => {
     const [redirecting, setRedirecting] = useState(false);
@@ -66,20 +38,37 @@ const Cart = () => {
 
     const redirectToCheckout = async () => {
         // Create Stripe checkout
-        const {
-            data: { id },
-        } = await axios.post('/api/checkout_sessions', {
-            items: Object.entries(cartDetails).map(([_, { id, quantity }]) => ({
-                price: id,
-                quantity,
+        const requestData = {
+            items: Object.entries(cartDetails).map(([_, { id, price, quantity }]) => ({
+              id: id,
+              price: price,
+              quantity,
             })),
-        });
-
+          };
+          console.log('POST Request Data:', requestData);
+      
+          // Make the POST request to create a Stripe checkout session
+          const response = await axios.post('/api/checkout_sessions', requestData);
+      
+          // Destructure the 'id' property from the response
+          const { data: { id } } = response;
+          
         // Redirect to checkout
         const stripe = await getStripe();
-        await stripe.redirectToCheckout({ sessionId: id });
-
-    };
+      
+        const { error } = await stripe!.redirectToCheckout({
+            // Make the id field from the Checkout Session creation API response
+            // available to this file, so you can provide it as parameter here
+            // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+            sessionId: id,
+          });
+          // If `redirectToCheckout` fails due to a browser or network
+          // error, display the localized error message to your customer
+          // using `error.message`.
+          console.warn(error.message);
+        };
+        
+    
 
 
     return (
@@ -89,21 +78,10 @@ const Cart = () => {
             </Head>
             {/* Main Div */}
             <div className="container xl:max-w-screen-xl mx-auto py-12 px-6">
-                {/* Checkout and Clear Buttons */}
-                {Object.keys(cartDetails).length != 0 && (
+            {Object.keys(cartDetails).length != 0 && (
                     <>
-                        <h2 className="text-4xl font-semibold pb-8">Your shopping cart</h2>
-                        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            Clear all
-                        </button>
-                        <button
-                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            onClick={redirectToCheckout}
-                        >
-                            Checkout
-                        </button>
+                        <h2 className="text-4xl font-semibold text-center">Your shopping cart</h2>
                     </>)}
-
                 {/* Product Banner */}
                 <div className="mt-12">
                     {Object.entries(cartDetails).map(([key, product]) => (
@@ -146,6 +124,19 @@ const Cart = () => {
                         </div>
                     ))}
                 </div>
+                {/* Checkout and Clear Buttons */}
+                     {Object.keys(cartDetails).length != 0 && (
+                    <div className="pt-8 text-center">
+                        <Button
+                            variant="contained" color="primary" 
+                            onClick={redirectToCheckout}
+                        >
+                            Checkout
+                        </Button>
+                        <Button variant="contained" color="primary" >
+                            Clear all
+                        </Button>
+                    </div>)}
                 {Object.keys(cartDetails).length == 0 && (
                     <>
                         <h2 className="text-4xl font-semibold pt-8 pb-8">
@@ -161,6 +152,8 @@ const Cart = () => {
                 )}
             </div>
         </>)
-};
+};     
+        
+
 
 export default Cart;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSession, signIn, signOut } from "next-auth/react"
-
+import { Button } from '@mui/material';
 
 function Profile() {
   const { data: session } = useSession()
@@ -9,7 +9,9 @@ function Profile() {
       <>
         Signed in as {session.user.email} <br />
         Your name: {session.user.name} <br />
-        <button onClick={() => signOut()}>Sign out</button>
+        <Button variant="contained" color="primary" component="label">
+          <button onClick={() => signOut()}>Sign out</button>
+        </Button>
       </>
     )
   }

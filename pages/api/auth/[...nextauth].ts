@@ -11,13 +11,13 @@ import clientPromise from "../../../lib/mongodb"
 export const authOptions: NextAuthOptions = {
   // https://next-auth.js.org/configuration/providers/oauth
   providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+    }),
+    GithubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
     }),
     EmailProvider({
       server: {
@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
   //     token.userRole = "admin"
   //     return token
   //   },
-  debug: true,
+  debug: false,
 }
 
 export default NextAuth(authOptions)

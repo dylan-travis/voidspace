@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+
 
 export async function getServerSideProps() {
     try {
@@ -52,6 +56,7 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
             response = await response.json();
             console.log("response from handleBookingSubmit" + JSON.stringify(response))
             // Invoke the updateCalendarState prop to trigger the state update in the Calendar component
+            setIsModalOpen(false);
             updateCalendarState(response);
         } catch (errorMessage) {
             console.error(errorMessage);
@@ -68,14 +73,15 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
             const isBooked = bookedHours.includes(hour);
 
             return (
-                <button
+                <Button
                     key={hour}
-                    className={`bg-black hover:bg-gray-500 text-white font-bold py-2 px-4 rounded ${isBooked ? 'disabled bg-gray-300 hover:bg-gray-300' : ''}`}
+                    className={`${isBooked ? 'disabled bg-gray-300 hover:bg-gray-300' : ''}`}
                     onClick={() => handleHourClick(hour)}
                     disabled={isBooked}
+                    variant="contained"
                 >
                     {format(new Date().setHours(hour, 0), 'HH:mm')}
-                </button>
+                </Button>
             );
         });
     };
@@ -89,39 +95,41 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
                 {renderHoursButtons()}
             </div>
             {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center">
-                    <div className="bg-white p-4 shadow rounded">
-                        <form onSubmit={handleBookingSubmit}>
-                            <div>
-                                <label htmlFor="title">Title:</label>
-                                <input type="text" id="title" />
-                            </div>
-                            <div>
-                                <label htmlFor="title">Name:</label>
-                                <input type="text" id="name" />
-                            </div>
-                            <div>
-                                <label htmlFor="description">Description:</label>
-                                <textarea id="description" />
-                            </div>
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    type="button"
-                                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
-                                    onClick={() => setIsModalOpen(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                >
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </form>
+                <Box>
+                    <div className="fixed inset-0 flex items-center justify-center">
+                        <div className="bg-white p-4 shadow rounded">
+                            <form onSubmit={handleBookingSubmit}>
+                                <div>
+                                    <label htmlFor="title">Title:</label>
+                                    <input type="text" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
+                                </div>
+                                <div>
+                                    <label htmlFor="title">Name:</label>
+                                    <input type="text" id="name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
+                                </div>
+                                <div>
+                                    <label htmlFor="description">Description:</label>
+                                    <textarea id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
+                                </div>
+                                <div className="flex justify-end mt-4">
+                                    <Button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(false)}
+                                        variant="contained"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                    >
+                                        Add to Cart
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                </Box>
             )}
             {/* Rest of the calendar components */}
         </div>

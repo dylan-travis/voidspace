@@ -1,9 +1,7 @@
-// register page using TypeScript that has a form with the following fields: Name, Last Name, Email, Password, Confirm Password, Phone Number, Address, City, State, Zip Code, and Country. Please also create a form to upload a photo of a driver's license, as well as a submit button which uploads the form and creates a user in the MongoDB database.
-
 import React, { useState } from 'react';
-import { TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
+import SendIcon from '@mui/icons-material/Send';
+
 
 interface RegisterFormData {
   name: string;
@@ -59,34 +57,42 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <FormControl>
-      <h1 className="font-bold text-4xl p-8">Register</h1>
-      <form>
+    <>
+      <h1 className="mb-4 text-4xl font-bold text-center text-gray-900 dark:text-white pt-5">Register</h1>
+      <form action="#" className="space-y-8">
         <div>
-          <label htmlFor="name">Name:</label>
-          <TextField  type="text"
-            id="name"
-            name="name" onSubmit={handleSubmit} value={formData.name}/>
+          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Name:</label>
+          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="John" onSubmit={handleSubmit} value={formData.name}/>
         </div>
         <div>
-          <label htmlFor="lastName">Last Name:</label>
-          <TextField  type="text"
-            id="lastName"
-            name="lastName" onSubmit={handleSubmit} value={formData.lastName}/>
+          <label htmlFor="lastName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Last Name:</label>
+          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Doe" onSubmit={handleSubmit} value={formData.lastName}/>
+        </div>
+        <div>
+          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email:</label>
+          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="john@doe.com" onSubmit={handleSubmit} value={formData.email}/>
+        </div>
+        <div>
+          <label htmlFor="phoneNumber" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Phone:</label>
+          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="888-888-8888" onSubmit={handleSubmit} value={formData.phoneNumber}/>
         </div>
         {/* Other form fields */}
         <div>
-          <label htmlFor="photo">Driver's License Photo:</label>
-          <input
-            type="file"
-            id="photo"
-            name="photo"
-            onChange={handlePhotoUpload}
-          />
+          <label htmlFor="photo" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Driver's License Photo:</label>
+          <Button variant="contained" color="primary" component="label">
+            Upload File
+            <input
+              type="file"
+              id="photo"
+              name="photo"
+              hidden
+              onChange={handlePhotoUpload}
+            />
+          </Button>
         </div>
-        <Button type="submit" variant="outlined">Submit</Button>
+        <Button variant="contained" color="primary" endIcon={<SendIcon />}>Register</Button>
       </form>
-    </FormControl>
+    </>
   );
 };
 
