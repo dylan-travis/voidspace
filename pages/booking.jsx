@@ -48,6 +48,7 @@ export default function Calendar({ bookings }) {
     const [allBookings, setAllBookings] = useState([]);
     let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'))
     let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date())
+    const [bookedHours, setBookedHours] = useState([]);
 
     let days = eachDayOfInterval({
         start: firstDayCurrentMonth,
@@ -67,6 +68,7 @@ export default function Calendar({ bookings }) {
             // console.log("All Bookings is now: " + JSON.stringify(allBookings))
             setFilteredBookings(updatedBookings.filter((meeting) =>
                 isSameDay(parseISO(meeting.bookingDate), selectedDay)));
+            setBookedHours([...bookedHours, ...updatedBookings.map((booking) => booking.bookingHour)])
         }
         else {
             setFilteredBookings(bookings.filter((meeting) =>
@@ -228,7 +230,7 @@ export default function Calendar({ bookings }) {
                     </section>
                 </div>
             </div>
-            <TimePicker selectedDay={selectedDay} updateCalendarState={updateCalendarState} />
+            <TimePicker selectedDay={selectedDay} updateCalendarState={updateCalendarState} bookings={bookings} bookedHours={bookedHours} setBookedHours={setBookedHours} />
         </div>
     )
 }
@@ -275,7 +277,8 @@ function Meeting({ meeting, handleDeleteMeeting }) {
         const parsedHour = parseInt(hour, 10);
         // Ensure the hour is within the valid range (0 to 23)
         if (isNaN(parsedHour) || parsedHour < 0 || parsedHour > 23) {
-            throw new Error('Invalid hour value. Please provide a valid 24-hour clock hour (0 to 23).'); }
+            throw new Error('Invalid hour value. Please provide a valid 24-hour clock hour (0 to 23).');
+        }
         // Convert to 12-hour clock format
         const formattedHour = parsedHour % 12 || 12;
         // Determine AM or PM based on the original hour value

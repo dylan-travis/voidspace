@@ -6,29 +6,18 @@ import SendIcon from '@mui/icons-material/Send';
 import { useSession } from "next-auth/react"
 
 
-export async function getServerSideProps() {
-    try {
-        let response = await fetch('http://localhost:3000/api/addBooking');
-        let bookings = await response.json();
-
-        return {
-            props: { bookings: JSON.parse(JSON.stringify(bookings)) },
-        };
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-const TimePicker = ({ selectedDay, updateCalendarState }) => {
+const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, setBookedHours }) => {
 
     // State variables
     const [selectedHour, setSelectedHour] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [meetings, setMeetings] = useState([]);
-    const [bookedHours, setBookedHours] = useState([16, 18]); // Example: 16:00 and 18:00 are booked
+    // let [bookedHours, setBookedHours] = useState([]);
     const { data: session } = useSession()
     // Create a ref to hold the reference of the modal container
     const modalRef = useRef(null);
+
+    console.log(bookings)
 
     // Function to handle click outside the modal
     const handleOutsideClick = (e) => {
@@ -37,8 +26,24 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
         }
     };
 
-    // Add click event listener when the modal opens
     useEffect(() => {
+        // Function to loop over the bookings and find booking hours
+        const findBookedHours = () => {
+            const bookedHoursSet = new Set(); // Using a Set to avoid duplicates
+
+            bookings.forEach((booking) => {
+                const { bookingHour } = booking;
+                bookedHoursSet.add(bookingHour);
+            });
+
+            setBookedHours(Array.from(bookedHoursSet));
+        };
+
+        findBookedHours(); // Call the function to update the state
+    }, [bookings]); // Make sure to add "bookings" as a dependency to update the state when the array changes
+
+    useEffect(() => {
+        // Add click event listener when the modal opens
         if (isModalOpen) {
             document.addEventListener('mousedown', handleOutsideClick);
         }
