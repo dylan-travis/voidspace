@@ -1,5 +1,7 @@
 import { CURRENCY, MAX_AMOUNT, MIN_AMOUNT } from '../../../config'
 import { NextApiRequest, NextApiResponse } from 'next'
+import axios from 'axios';
+
 
 import Stripe from 'stripe'
 import { formatAmountForStripe } from '../../../utils/stripe-helpers'
@@ -8,6 +10,21 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     // https://github.com/stripe/stripe-node#configuration
     apiVersion: '2022-08-01',
 })
+
+async function postToStripeHook(checkoutSessionId: string) {
+    try {
+      // Replace 'YOUR_API_URL' with the actual URL where your 'stripe_hook.js' route is hosted.
+      const apiUrl = '/stripe_hook.js';
+      // Make a POST request to the 'stripe_hook.js' route.
+      await axios.post(apiUrl, { checkoutSessionId });
+  
+      console.log('Successfully posted to stripe_hook.js');
+    } catch (error) {
+      console.error('Error while posting to stripe_hook.js:', error.message);
+      // Handle the error appropriately (e.g., retry, log, etc.).
+    }
+  }
+  
 
 export default async function handler(
     req: NextApiRequest,
@@ -42,6 +59,9 @@ export default async function handler(
             }
             const checkoutSession: Stripe.Checkout.Session =
                 await stripe.checkout.sessions.create(params)
+
+            // Call the function to post to stripe_hook.js with the created checkout session ID.
+            await postToStripeHook(checkoutSession.id);
 
             res.status(200).json(checkoutSession)
         } catch (err) {
