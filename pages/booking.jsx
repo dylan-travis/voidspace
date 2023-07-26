@@ -294,7 +294,7 @@ function Meeting({ meeting, handleDeleteMeeting }) {
                 className="flex-none w-10 h-10 rounded-full"
             />
             <div className="flex-auto">
-                <p className="text-gray-900">{meeting.username}</p>
+                <p className="text-gray-900">{meeting.username} {meeting.confirmed ? <span className="italic text-green-500"> (confirmed)</span> : <span className="italic text-red-600"> (unconfirmed)</span>}</p>
                 <p className="mt-0.5">
                     <time dateTime={meeting.startDatetime}>
                         {bookingHourStart}
@@ -303,6 +303,7 @@ function Meeting({ meeting, handleDeleteMeeting }) {
                     <time dateTime={meeting.endDatetime}>
                         {bookingHourEnd}
                     </time>
+
                 </p>
             </div>
             <Menu

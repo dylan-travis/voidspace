@@ -24,7 +24,7 @@ import {
     startOfToday,
 } from 'date-fns'
 import { useSession } from "next-auth/react"
-
+import formatHoursTo12HourClock from '../utils/24hr';
 
 let cartDetails = {}
     
@@ -45,15 +45,12 @@ const Cart = ({bookings}) => {
     const { data: session } = useSession()
     const [cartDetails, setCartDetails] = useState(bookings); // Store the cart items in state
 
-
-    console.log(bookings)
-
     if (session) {
         const userId = session.user.id;
     }
 
     async function removeItem(product, quantity) {
-        console.log("remove " + JSON.stringify(product, quantity));
+        // console.log("remove " + JSON.stringify(product, quantity));
     
         try {
           await fetch(`/api/deleteBooking?_id=${product._id}`, {
@@ -139,7 +136,7 @@ const Cart = ({bookings}) => {
                                 <p className="font-semibold text-xl group-hover:underline">
                                     {product.productName}
                                 </p>
-                                <p className="text-gray-500  italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{format(product.bookingHour, 'HH:mm')}</span></p>
+                                <p className="text-gray-500  italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
 
                             </a>
                             {/* Quantity */}
