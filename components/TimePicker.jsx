@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import { useSession } from "next-auth/react"
 
 
 export async function getServerSideProps() {
@@ -25,6 +26,28 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [meetings, setMeetings] = useState([]);
     const [bookedHours, setBookedHours] = useState([16, 18]); // Example: 16:00 and 18:00 are booked
+    const { data: session } = useSession()
+    // Create a ref to hold the reference of the modal container
+    const modalRef = useRef(null);
+
+    // Function to handle click outside the modal
+    const handleOutsideClick = (e) => {
+        if (modalRef.current && !modalRef.current.contains(e.target)) {
+            setIsModalOpen(false);
+        }
+    };
+
+    // Add click event listener when the modal opens
+    useEffect(() => {
+        if (isModalOpen) {
+            document.addEventListener('mousedown', handleOutsideClick);
+        }
+
+        // Clean up the click event listener when the component unmounts or the modal closes
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, [isModalOpen]);
 
 
     const handleHourClick = (hour) => {
@@ -35,18 +58,19 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         try {
-            const title = e.target.elements.title.value;
-            const name = e.target.elements.name.value;
-            const description = e.target.elements.description.value;
             let response = await fetch("http://localhost:3000/api/addBooking", {
                 method: "POST",
                 body: JSON.stringify({
-                    id: Math.random().toString(36).substr(2, 9),
-                    name,
-                    date: selectedDay,
-                    hour: selectedHour,
-                    title,
-                    description,
+                    id: session.user.id,
+                    bookingDate: selectedDay,
+                    bookingHour: selectedHour,
+                    date: Date.now(),
+                    confirmed: false,
+                    productName: "Two Hours",
+                    price: "price_1NQcKtK1A3hq7BalXT5wvjyv",
+                    productPrice: 60,
+                    quantity: 1
+
                 }),
                 headers: {
                     Accept: "application/json, text/plain, */*",
@@ -97,18 +121,16 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
             {isModalOpen && (
                 <Box>
                     <div className="fixed inset-0 flex items-center justify-center">
-                        <div className="bg-white p-4 shadow rounded">
+                        <div ref={modalRef} className="bg-white p-4 shadow-lg rounded">
                             <form onSubmit={handleBookingSubmit}>
                                 <div>
-                                    <label htmlFor="title">Title:</label>
-                                    <input type="text" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
-                                </div>
-                                <div>
-                                    <label htmlFor="title">Name:</label>
-                                    <input type="text" id="name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
-                                </div>
-                                <div>
-                                    <label htmlFor="description">Description:</label>
+                                    <div className="bg-slate-200 shadow-lg border-solid rounded ">
+                                        <h2 className="text-xl font-bold mb-4 text-center">Book the Studio:</h2>
+                                        <p className="text-med italic  text-center">{format(new Date().setHours(selectedHour, 0), 'HH:mm')}-{format(new Date().setHours(selectedHour + 2, 0), 'HH:mm')} </p>
+                                        <p className="text-med italic mb-4 text-center">{format(new Date(selectedDay), 'dd MMMM, yyyy')}</p>
+                                        <input type="checkbox" className="ml-4"></input> <span className="text-sm italic text-center">Include an engineer ($50/hr)
+                                        </span></div>
+                                    <label htmlFor="description">Comments:</label>
                                     <textarea id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
                                 </div>
                                 <div className="flex justify-end mt-4">
@@ -122,6 +144,7 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
                                     <Button
                                         type="submit"
                                         variant="contained"
+                                        color="primary"
                                     >
                                         Add to Cart
                                     </Button>

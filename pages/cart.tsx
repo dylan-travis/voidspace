@@ -9,32 +9,68 @@ import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@mui/material';
 import CheckoutForm from '../components/CheckoutForm';
+import {
+    add,
+    eachDayOfInterval,
+    endOfMonth,
+    format,
+    getDay,
+    isEqual,
+    isSameDay,
+    isSameMonth,
+    isToday,
+    parse,
+    parseISO,
+    startOfToday,
+} from 'date-fns'
+import { useSession } from "next-auth/react"
 
 
-const cartDetails = {
-    'price_1NQcKtK1A3hq7BalXT5wvjyv': {
-        id: 'price_1NQcKtK1A3hq7BalXT5wvjyv',
-        name: 'Two Hours',
-        description: 'Two hour booking',
-        image: 'https://i1.wp.com/cornellsun.com/wp-content/uploads/2020/06/1591119073-screen_shot_2020-06-02_at_10.30.13_am.png',
-        currency: 'USD',
-        price: 60,
-        formattedValue: '$60.00',
-        value: 1000,
-        quantity: 1,
-        totalPrice: "60.00",
-        selectedHourBegin: "10:00",
-        selectedHourEnd: "12:00",
-        day: "2023-10-10"
+let cartDetails = {}
+    
+export async function getServerSideProps() {
+        try {
+            const response = await fetch('http://localhost:3000/api/getBookings');
+            const bookings = await response.json();
+            // console.log(bookings)
+            return { props: { bookings } };
+        } catch (e) {
+            console.error(e);
+        }
     }
-}
+    
 
-const Cart = () => {
+const Cart = ({bookings}) => {
     const [redirecting, setRedirecting] = useState(false);
+    const { data: session } = useSession()
+    const [cartDetails, setCartDetails] = useState(bookings); // Store the cart items in state
 
-    function removeItem(product, quantity){
-        console.log("remove " + product + quantity)
+
+    console.log(bookings)
+
+    if (session) {
+        const userId = session.user.id;
     }
+
+    async function removeItem(product, quantity) {
+        console.log("remove " + JSON.stringify(product, quantity));
+    
+        try {
+          await fetch(`/api/deleteBooking?_id=${product._id}`, {
+            method: "DELETE"
+          });
+          
+          // If the item is successfully deleted from the backend, remove it from the cartDetails state.
+          setCartDetails((prevCartDetails) => {
+            const updatedCart = { ...prevCartDetails };
+            delete updatedCart[product._id];
+            return updatedCart;
+          });
+          
+        } catch (error) {
+          console.error(error);
+        }
+      }
 
     const redirectToCheckout = async () => {
         // Create Stripe checkout
@@ -95,22 +131,23 @@ const Cart = () => {
                                 <div className="relative w-20 h-20 group-hover:scale-110 transition-transform">
                                     <Image
                                         src={product.image}
-                                        alt={product.name}
+                                        alt={product.productName}
                                         width={80}
                                         height={80}
                                     />
                                 </div>
                                 <p className="font-semibold text-xl group-hover:underline">
-                                    {product.name}
+                                    {product.productName}
                                 </p>
-                                <p className="text-gray-500  italic">{product.selectedHourBegin} - {product.selectedHourEnd}, <span className="font-semibold">{product.day}</span></p>
+                                <p className="text-gray-500  italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{format(product.bookingHour, 'HH:mm')}</span></p>
+
                             </a>
                             {/* Quantity */}
                             <div className="flex items-center space-x-3">
                                 {/* Price */}
                                 <p className="font-semibold text-xl ml-16">
 
-                                    ${(product.price)}
+                                    ${(product.productPrice)}
                                 </p>
 
                                 {/* Remove item */}
@@ -139,7 +176,7 @@ const Cart = () => {
                     </div>)}
                 {Object.keys(cartDetails).length == 0 && (
                     <>
-                        <h2 className="text-4xl font-semibold pt-8 pb-8">
+                        <h2 className="text-4xl font-semibold pb-8">
                             Your shopping cart is empty.
                         </h2>
                         <p className="mt-1 text-xl">

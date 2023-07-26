@@ -25,7 +25,7 @@ export default async function handler(
 
             // Create the line_items array for the Stripe checkout session
             const lineItems = items.map((item) => ({
-              price: item.id,
+              price: item.price,
               quantity: item.quantity,
             }));
 

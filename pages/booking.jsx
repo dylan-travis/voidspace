@@ -66,11 +66,11 @@ export default function Calendar({ bookings }) {
             // Takes the updatedBookings array and filters it to only show the meetings that match the selected day
             // console.log("All Bookings is now: " + JSON.stringify(allBookings))
             setFilteredBookings(updatedBookings.filter((meeting) =>
-                isSameDay(parseISO(meeting.date), selectedDay)));
+                isSameDay(parseISO(meeting.bookingDate), selectedDay)));
         }
         else {
             setFilteredBookings(bookings.filter((meeting) =>
-                isSameDay(parseISO(meeting.date), selectedDay)));
+                isSameDay(parseISO(meeting.bookingDate), selectedDay)));
 
             logBookings(bookings, selectedDay);
         }
@@ -88,7 +88,7 @@ export default function Calendar({ bookings }) {
         try {
             const allBookings = bookings;
             const selectedDayBookings = bookings.filter((meeting) =>
-                isSameDay(parseISO(meeting.date), selectedDay)
+                isSameDay(parseISO(meeting.bookingDate), selectedDay)
             );
             setAllBookings(allBookings);
             setFilteredBookings(selectedDayBookings);
@@ -198,7 +198,7 @@ export default function Calendar({ bookings }) {
 
                                     <div className="w-1 h-1 mx-auto mt-1">
                                         {allBookings.some((meeting) =>
-                                            isSameDay(parseISO(meeting.date), day)
+                                            isSameDay(parseISO(meeting.bookingDate), day)
                                         ) && (
                                                 <div className="w-1 h-1 rounded-full bg-sky-500"></div>
                                             )}
@@ -235,7 +235,7 @@ export default function Calendar({ bookings }) {
 
 // Displays Meetings within the calendar
 function Meeting({ meeting, handleDeleteMeeting }) {
-    let startDateTime = parseISO(meeting.date)
+    let startDateTime = parseISO(meeting.bookingDate)
     let endDateTime = parseISO(meeting.endDatetime)
 
     const handleDeleteBooking = async (bookingId) => {
