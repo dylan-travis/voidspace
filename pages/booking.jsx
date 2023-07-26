@@ -236,7 +236,9 @@ export default function Calendar({ bookings }) {
 // Displays Meetings within the calendar
 function Meeting({ meeting, handleDeleteMeeting }) {
     let startDateTime = parseISO(meeting.bookingDate)
-    let endDateTime = parseISO(meeting.endDatetime)
+    let endDateTime = parseISO(meeting.endBookingDate)
+    let bookingHourStart = formatHoursTo12HourClock(meeting.bookingHour)
+    let bookingHourEnd = formatHoursTo12HourClock(meeting.endBookingHour)
 
     const handleDeleteBooking = async (bookingId) => {
         try {
@@ -268,22 +270,35 @@ function Meeting({ meeting, handleDeleteMeeting }) {
         );
     };
 
+    function formatHoursTo12HourClock(hour) {
+        // Parse the hour string to an integer
+        const parsedHour = parseInt(hour, 10);
+        // Ensure the hour is within the valid range (0 to 23)
+        if (isNaN(parsedHour) || parsedHour < 0 || parsedHour > 23) {
+            throw new Error('Invalid hour value. Please provide a valid 24-hour clock hour (0 to 23).'); }
+        // Convert to 12-hour clock format
+        const formattedHour = parsedHour % 12 || 12;
+        // Determine AM or PM based on the original hour value
+        const period = parsedHour < 12 ? 'AM' : 'PM';
+        return `${formattedHour}${period}`;
+    }
+
     return (
         <li key={meeting._id} className="flex items-center px-4 py-2 space-x-4 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-100">
             <img
-                src={meeting.imageUrl}
+                src="/blacksquare.jpg"
                 alt=""
                 className="flex-none w-10 h-10 rounded-full"
             />
             <div className="flex-auto">
-                <p className="text-gray-900">{meeting.name}</p>
+                <p className="text-gray-900">{meeting.username}</p>
                 <p className="mt-0.5">
                     <time dateTime={meeting.startDatetime}>
-                        {format(startDateTime, 'h:mm a')}
+                        {bookingHourStart}
                     </time>{' '}
                     -{' '}
                     <time dateTime={meeting.endDatetime}>
-                        {/* {format(endDateTime, 'h:mm a')} */}
+                        {bookingHourEnd}
                     </time>
                 </p>
             </div>

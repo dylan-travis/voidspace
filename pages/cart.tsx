@@ -130,7 +130,7 @@ const Cart = ({bookings}) => {
                             <a className="flex items-center space-x-4 group">
                                 <div className="relative w-20 h-20 group-hover:scale-110 transition-transform">
                                     <Image
-                                        src={product.image}
+                                        src="/blacksquare.jpg"
                                         alt={product.productName}
                                         width={80}
                                         height={80}

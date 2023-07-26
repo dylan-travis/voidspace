@@ -18,6 +18,11 @@ const theme = createTheme({
       dark: '#FFF',
       contrastText: '#000',
     },
+    secondary: {
+      light: '#000',
+      main: '#000',
+      dark: '#000',
+    }
   },
 });
 

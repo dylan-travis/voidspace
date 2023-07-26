@@ -49,6 +49,20 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
         };
     }, [isModalOpen]);
 
+    function formatHoursTo12HourClock(hour) {
+        // Parse the hour string to an integer
+        const parsedHour = parseInt(hour, 10);
+        // Ensure the hour is within the valid range (0 to 23)
+        if (isNaN(parsedHour) || parsedHour < 0 || parsedHour > 23) {
+            throw new Error('Invalid hour value. Please provide a valid 24-hour clock hour (0 to 23).');
+        }
+        // Convert to 12-hour clock format
+        const formattedHour = parsedHour % 12 || 12;
+        // Determine AM or PM based on the original hour value
+        const period = parsedHour < 12 ? 'AM' : 'PM';
+        return `${formattedHour}${period}`;
+    }
+
 
     const handleHourClick = (hour) => {
         setSelectedHour(hour);
@@ -62,8 +76,12 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
                 method: "POST",
                 body: JSON.stringify({
                     id: session.user.id,
+                    username: session.user.username,
                     bookingDate: selectedDay,
                     bookingHour: selectedHour,
+                    endBookingHour: selectedHour + 2,
+                    endBookingDate: selectedDay,
+                    imgUrl: "/blacksquare.jpg",
                     date: Date.now(),
                     confirmed: false,
                     productName: "Two Hours",
@@ -95,16 +113,16 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
         // Needs conditional logic for disabling the button if the hour is already booked
         return hours.map((hour) => {
             const isBooked = bookedHours.includes(hour);
-
+            let americanHours = formatHoursTo12HourClock(hour)
             return (
                 <Button
-                    key={hour}
+                    key={(hour)}
                     className={`${isBooked ? 'disabled bg-gray-300 hover:bg-gray-300' : ''}`}
                     onClick={() => handleHourClick(hour)}
                     disabled={isBooked}
                     variant="contained"
                 >
-                    {format(new Date().setHours(hour, 0), 'HH:mm')}
+                    {americanHours}
                 </Button>
             );
         });
@@ -126,7 +144,7 @@ const TimePicker = ({ selectedDay, updateCalendarState }) => {
                                 <div>
                                     <div className="bg-slate-200 shadow-lg border-solid rounded ">
                                         <h2 className="text-xl font-bold mb-4 text-center">Book the Studio:</h2>
-                                        <p className="text-med italic  text-center">{format(new Date().setHours(selectedHour, 0), 'HH:mm')}-{format(new Date().setHours(selectedHour + 2, 0), 'HH:mm')} </p>
+                                        <p className="text-med italic  text-center">{formatHoursTo12HourClock(selectedHour)}-{formatHoursTo12HourClock(selectedHour + 2)} </p>
                                         <p className="text-med italic mb-4 text-center">{format(new Date(selectedDay), 'dd MMMM, yyyy')}</p>
                                         <input type="checkbox" className="ml-4"></input> <span className="text-sm italic text-center">Include an engineer ($50/hr)
                                         </span></div>
