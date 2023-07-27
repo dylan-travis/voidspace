@@ -230,7 +230,7 @@ export default function Calendar({ bookings }) {
                     </section>
                 </div>
             </div>
-            <TimePicker selectedDay={selectedDay} updateCalendarState={updateCalendarState} bookings={bookings} bookedHours={bookedHours} setBookedHours={setBookedHours} />
+            <TimePicker selectedDay={selectedDay} updateCalendarState={updateCalendarState} bookings={bookings} bookedHours={bookedHours} setBookedHours={setBookedHours} filteredBookings={filteredBookings} />
         </div>
     )
 }

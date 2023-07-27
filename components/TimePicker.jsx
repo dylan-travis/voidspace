@@ -6,7 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { useSession } from "next-auth/react"
 
 
-const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, setBookedHours }) => {
+const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, setBookedHours, filteredBookings }) => {
 
     // State variables
     const [selectedHour, setSelectedHour] = useState(null);
@@ -14,10 +14,11 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
     const [meetings, setMeetings] = useState([]);
     // let [bookedHours, setBookedHours] = useState([]);
     const { data: session } = useSession()
+    const [updatedBookings, setUpdatedBookings] = useState([])
     // Create a ref to hold the reference of the modal container
     const modalRef = useRef(null);
 
-    console.log(bookings)
+    console.log(filteredBookings)
 
     // Function to handle click outside the modal
     const handleOutsideClick = (e) => {
@@ -26,34 +27,44 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
         }
     };
 
+
+    // useEffect to initialize the updatedBookings state with the initial bookings data
     useEffect(() => {
-        // Function to loop over the bookings and find booking hours
-        const findBookedHours = () => {
-            const bookedHoursSet = new Set(); // Using a Set to avoid duplicates
+        const bookedHoursSet = new Set(); // Using a Set to avoid duplicates
 
-            bookings.forEach((booking) => {
-                const { bookingHour } = booking;
-                bookedHoursSet.add(bookingHour);
-            });
+        bookings.forEach((booking) => {
+            const { bookingDate, bookingHour } = booking;
+            bookedHoursSet.add({ date: bookingDate, hour: bookingHour });
+        });
 
-            setBookedHours(Array.from(bookedHoursSet));
-        };
+        setBookedHours(Array.from(bookedHoursSet));
+        setUpdatedBookings(Array.from(bookedHoursSet));
+        console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
+    }, [bookings, setBookedHours]);
 
-        findBookedHours(); // Call the function to update the state
-    }, [bookings]); // Make sure to add "bookings" as a dependency to update the state when the array changes
-
+    // useEffect to update the updatedBookings state whenever the bookings prop changes
     useEffect(() => {
-        // Add click event listener when the modal opens
+        const bookedHoursSet = new Set();
+
+        bookings.forEach((booking) => {
+            const { bookingDate, bookingHour } = booking;
+            bookedHoursSet.add({ date: bookingDate, hour: bookingHour });
+        });
+
+        setUpdatedBookings(Array.from(bookedHoursSet));
+    }, [bookings]); 1
+    // Add click event listener when the modal opens
+    useEffect(() => {
         if (isModalOpen) {
             document.addEventListener('mousedown', handleOutsideClick);
         }
-
         // Clean up the click event listener when the component unmounts or the modal closes
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
     }, [isModalOpen]);
 
+    // formats the hour to 12-hour clock format
     function formatHoursTo12HourClock(hour) {
         // Parse the hour string to an integer
         const parsedHour = parseInt(hour, 10);
@@ -68,7 +79,7 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
         return `${formattedHour}${period}`;
     }
 
-
+    // when you click on a time slot, update selectedHour
     const handleHourClick = (hour) => {
         setSelectedHour(hour);
         setIsModalOpen(true);
@@ -105,6 +116,8 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
             // Invoke the updateCalendarState prop to trigger the state update in the Calendar component
             setIsModalOpen(false);
             updateCalendarState(response);
+            console.log("Bookings object is now: " + JSON.stringify(bookings))
+            console.log("Filtered bookings is now: " + JSON.stringify(filteredBookings))
         } catch (errorMessage) {
             console.error(errorMessage);
         }
@@ -117,8 +130,26 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
         // This maps out the hours array and returns a button for each hour
         // Needs conditional logic for disabling the button if the hour is already booked
         return hours.map((hour) => {
-            const isBooked = bookedHours.includes(hour);
             let americanHours = formatHoursTo12HourClock(hour)
+            // Reformat the booking.date to match the format of selectedDay ("YYYY-MM-DD")
+            function bookingDateFormatted(date) {
+                // console.log("trying to format date: " + date)
+                try {
+                    new Date(date).toISOString().split('T')[0];
+                }
+                catch {
+                    console.log("error formatting date")
+                }
+            }
+
+            // Reformat selectedDay to match the format "YYYY-MM-DD"
+            function bookingSelectedDayFormatted(bookingdate) {
+                bookingdate.toISOString().split('T')[0];
+            }
+
+            const isBooked = filteredBookings.some(
+                (booking) => bookingDateFormatted(booking.bookingDate) === bookingSelectedDayFormatted(selectedDay) && booking.bookingHour === hour
+            );
             return (
                 <Button
                     key={(hour)}

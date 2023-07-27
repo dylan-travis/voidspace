@@ -14,9 +14,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 async function postToStripeHook(checkoutSessionId: string) {
     try {
       // Replace 'YOUR_API_URL' with the actual URL where your 'stripe_hook.js' route is hosted.
-      const apiUrl = '/stripe_hook.js';
+      const apiUrl = 'http://localhost:3000/api/webhooks';
+      const headers = {
+        'Content-Type': 'application/json', // Set the content type to JSON
+        'stripe-signature': 'payment_intent'
+    };
       // Make a POST request to the 'stripe_hook.js' route.
-      await axios.post(apiUrl, { checkoutSessionId });
+      await axios.post(apiUrl, { checkoutSessionId }, {headers});
   
       console.log('Successfully posted to stripe_hook.js');
     } catch (error) {
