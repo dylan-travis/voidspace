@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-
 import Cors from 'micro-cors'
 import Stripe from 'stripe'
 import { buffer } from 'micro'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // https://github.com/stripe/stripe-node#configuration
-  apiVersion: '2022-08-01',
+  apiVersion: '2022-11-15',
 })
 
 const webhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET!
@@ -27,10 +26,15 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     const buf = await buffer(req)
     const sig = req.headers['stripe-signature']!
 
+    console.log("buffer is: " + buf.toString())
+    console.log("sig is: " + sig)
+    console.log("headers: " + JSON.stringify(req.headers))
+
     let event: Stripe.Event
 
     try {
       event = stripe.webhooks.constructEvent(buf.toString(), sig, webhookSecret)
+      console.log("event", event)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error'
       // On error, log and return the error message.
