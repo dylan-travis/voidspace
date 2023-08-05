@@ -60,7 +60,7 @@ export default function Calendar({ bookings }) {
         // Logic to update the state in the Calendar component
         // Update the bookings state with the new meeting from the response (if available)
         if (response) {
-            let newResponse = await fetch('https://figstudios.vercel.app/getBookings');
+            let newResponse = await fetch(process.env.NEXTAUTH_URL + '/getBookings');
             const updatedBookings = await newResponse.json();
             // Add the new meeting to the existing allBookings array using spread operator
             setAllBookings([...allBookings, updatedBookings]);

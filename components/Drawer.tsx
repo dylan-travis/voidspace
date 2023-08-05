@@ -15,6 +15,7 @@ import CallIcon from '@mui/icons-material/Call';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -46,7 +47,8 @@ export default function TemporaryDrawer() {
         'Contact': <CallIcon />,
         'Profile': <AccountCircleIcon />,
         'Cart': <ShoppingCartIcon />,
-        'Logout': <LogoutIcon />
+        'Logout': <LogoutIcon />,
+        'Login': <LoginIcon />
         };
 
         const linkMapping = {
@@ -55,6 +57,7 @@ export default function TemporaryDrawer() {
             'Contact': '/contact',
             'Profile': '/profile',
             'Cart': '/cart',
+            'Login': '/login',
             'Logout': '/logout'
             };
 
@@ -81,7 +84,7 @@ export default function TemporaryDrawer() {
             </List>
             <Divider />
             <List>
-                {['Cart', 'Logout'].map((text) => (
+                {['Cart', 'Login', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon>
