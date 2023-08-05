@@ -38,7 +38,8 @@ function Profile() {
       const fetchUserProfile = async () => {
         try {
           // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint to fetch the user's profile
-          const response = await axios.get('/api/fetchProfile', {
+          const profileApiUrl = process.env.NEXTAUTH_URL + '/api/fetchProfile';
+          const response = await axios.get(profileApiUrl, {
             params: { userId: session.user.id },
           });
           const { username, email, phone, address } = response.data;

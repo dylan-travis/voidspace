@@ -28,7 +28,9 @@ function classNames(...classes) {
 // Grabs bookings from DB
 export async function getServerSideProps() {
     try {
-        let response = await fetch(process.env.NEXTAUTH_URL + '/api/getBookings');
+        const apiUrl = process.env.NEXTAUTH_URL + "/api/getBookings"
+        let response = await fetch(apiUrl);
+        console.log(response)
         const bookings = await response.json();
         // console.log(bookings)
         return { props: { bookings } };
@@ -60,7 +62,8 @@ export default function Calendar({ bookings }) {
         // Logic to update the state in the Calendar component
         // Update the bookings state with the new meeting from the response (if available)
         if (response) {
-            let newResponse = await fetch(process.env.NEXTAUTH_URL + '/getBookings');
+            let newResponseApiUrl = process.env.NEXTAUTH_URL + '/getBookings';
+            let newResponse = await fetch(newResponseApiUrl);
             const updatedBookings = await newResponse.json();
             // Add the new meeting to the existing allBookings array using spread operator
             setAllBookings([...allBookings, updatedBookings]);
@@ -243,8 +246,9 @@ function Meeting({ meeting, handleDeleteMeeting }) {
     let bookingHourEnd = formatHoursTo12HourClock(meeting.endBookingHour)
 
     const handleDeleteBooking = async (bookingId) => {
+        const deleteBookingApiUrl = process.env.NEXTAUTH_URL + '/api/deleteBooking';
         try {
-            await fetch(`/api/deleteBooking?_id=${bookingId}`, {
+            await fetch(deleteBookingApiUrl + `?_id=${bookingId}`, {
                 method: "DELETE"
             });
             // Perform any additional actions after successful deletion
