@@ -28,7 +28,7 @@ function classNames(...classes) {
 // Grabs bookings from DB
 export async function getServerSideProps() {
     try {
-        let response = await fetch('http://localhost:3000/api/getBookings');
+        let response = await fetch('https://figstudios.vercel.app/api/getBookings');
         const bookings = await response.json();
         // console.log(bookings)
         return { props: { bookings } };
@@ -60,7 +60,7 @@ export default function Calendar({ bookings }) {
         // Logic to update the state in the Calendar component
         // Update the bookings state with the new meeting from the response (if available)
         if (response) {
-            let newResponse = await fetch('http://localhost:3000/api/getBookings');
+            let newResponse = await fetch('https://figstudios.vercel.app/getBookings');
             const updatedBookings = await newResponse.json();
             // Add the new meeting to the existing allBookings array using spread operator
             setAllBookings([...allBookings, updatedBookings]);
