@@ -13,7 +13,7 @@ const client = new MongoClient(uri);
 async function findUserById(userId) {
   try {
     await client.connect();
-    const database = client.db('your-database-name'); // Replace 'your-database-name' with your actual database name
+    const database = client.db('test'); // Replace 'your-database-name' with your actual database name
     const usersCollection = database.collection('users');
 
     // Convert the user ID string to an ObjectId

@@ -28,7 +28,7 @@ function classNames(...classes) {
 // Grabs bookings from DB
 export async function getServerSideProps() {
     try {
-        let response = await fetch('https://figstudios.vercel.app/api/getBookings');
+        let response = await fetch(process.env.NEXTAUTH_URL + '/api/getBookings');
         const bookings = await response.json();
         // console.log(bookings)
         return { props: { bookings } };
