@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Head from 'next/head';
 import axios from 'axios';
-import getStripe from './get-stripe';
+import getStripe from '../utils/get-stripe';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
