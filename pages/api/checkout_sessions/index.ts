@@ -43,9 +43,6 @@ export default async function handler(
 
             console.log("checkoutSession object is: " + JSON.stringify(checkoutSession))
 
-            // // Call the function to post to stripe_hook.js with the created checkout session ID.
-            // await postToStripeHook(checkoutSession.id);
-
             res.status(200).json(checkoutSession)
         } catch (err) {
             const errorMessage =
