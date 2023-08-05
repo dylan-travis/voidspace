@@ -28,7 +28,7 @@ function classNames(...classes) {
 // Grabs bookings from DB
 export async function getServerSideProps() {
     try {
-        const apiUrl = process.env.NEXTAUTH_URL + "/api/getBookings"
+        const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getBookings"
         let response = await fetch(apiUrl);
         console.log(response)
         const bookings = await response.json();
@@ -62,7 +62,7 @@ export default function Calendar({ bookings }) {
         // Logic to update the state in the Calendar component
         // Update the bookings state with the new meeting from the response (if available)
         if (response) {
-            let newResponseApiUrl = process.env.NEXTAUTH_URL + '/getBookings';
+            let newResponseApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings';
             let newResponse = await fetch(newResponseApiUrl);
             const updatedBookings = await newResponse.json();
             // Add the new meeting to the existing allBookings array using spread operator
@@ -246,7 +246,7 @@ function Meeting({ meeting, handleDeleteMeeting }) {
     let bookingHourEnd = formatHoursTo12HourClock(meeting.endBookingHour)
 
     const handleDeleteBooking = async (bookingId) => {
-        const deleteBookingApiUrl = process.env.NEXTAUTH_URL + '/api/deleteBooking';
+        const deleteBookingApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/deleteBooking';
         try {
             await fetch(deleteBookingApiUrl + `?_id=${bookingId}`, {
                 method: "DELETE"

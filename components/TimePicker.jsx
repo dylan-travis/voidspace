@@ -88,7 +88,7 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         try {
-            const timePickerApiUrl = process.env.NEXTAUTH_URL + "/api/addBooking";
+            const timePickerApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/addBooking";
             let response = await fetch(timePickerApiUrl, {
                 method: "POST",
                 body: JSON.stringify({
