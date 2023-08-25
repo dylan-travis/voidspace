@@ -30,7 +30,6 @@ export async function getServerSideProps() {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getBookings"
         let response = await fetch(apiUrl);
-        console.log(response)
         const bookings = await response.json();
         // console.log(bookings)
         return { props: { bookings } };

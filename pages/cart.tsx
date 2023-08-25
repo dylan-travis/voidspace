@@ -30,9 +30,10 @@ let cartDetails = {}
     
 export async function getServerSideProps() {
         try {
-            const cartApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL! + '/api/getBookings'
+            const cartApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings'
             const response = await fetch(cartApiUrl);
             const bookings = await response.json();
+            console.log(bookings)
             // console.log(bookings)
             return { props: { bookings } };
         } catch (e) {
