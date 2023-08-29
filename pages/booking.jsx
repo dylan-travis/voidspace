@@ -19,7 +19,6 @@ import {
 import { Fragment, useState, useEffect } from 'react'
 import TimePicker from '../components/TimePicker'
 import { useSession, getSession } from "next-auth/react"
-import { stringify } from 'querystring';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -69,8 +68,13 @@ export async function getServerSideProps(context) {
       });
   
       const cartJson = await cartResponse.json();
-      const cart = cartJson.items;
-      return { props: { bookings, cart } };
+      if (cartJson.items == undefined) {
+        const cart = [];
+        return { props: { bookings, cart, userId } };
+      } else {
+        const cart = cartJson.items;
+        return { props: { bookings, cart, userId } };
+      }
     } catch (e) {
       console.error(e);
     }
@@ -85,7 +89,6 @@ export default function Calendar({ bookings, cart }) {
     let [selectedDay, setSelectedDay] = useState(today)
     const [filteredBookings, setFilteredBookings] = useState([]);
     const [allBookings, setAllBookings] = useState([]);
-    const [allCart, setAllCart] = useState([]);
     let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'))
     let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date())
     const [bookedHours, setBookedHours] = useState([]);
@@ -100,7 +103,6 @@ export default function Calendar({ bookings, cart }) {
         // Logic to update the state in the Calendar component
         // Update the bookings state with the new meeting from the response (if available)
         if (response, cart) {
-            console.log("response received!")
             let newResponseApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings';
             let newResponse = await fetch(newResponseApiUrl);
             const updatedBookings = await newResponse.json();
@@ -109,9 +111,8 @@ export default function Calendar({ bookings, cart }) {
                 cartItems.push(item);
               });
             const mergedBookingsAndCart = [...updatedBookings, ...cartItems];
-            console.log("mergedBookingsAndCart " + mergedBookingsAndCart);
             // Add the new meeting to the existing allBookings array using spread operator
-            setAllBookings([...allBookings, ...mergedBookingsAndCart]);
+            setAllBookings([...updatedBookings, ...mergedBookingsAndCart]);
             // Takes the updatedBookings array and filters it to only show the meetings that match the selected day
             setFilteredBookings(mergedBookingsAndCart.filter((meeting) =>
                 isSameDay(parseISO(meeting.bookingDate), selectedDay)));
@@ -120,15 +121,21 @@ export default function Calendar({ bookings, cart }) {
         else {
             let newResponseApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings';
             let newResponse = await fetch(newResponseApiUrl);
-            const updatedBookings = await newResponse.json();
+            const newResponseJson = await newResponse.json();
+            const updatedBookings = await newResponseJson[0].items;
+            let newCartUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getCart?userId=' + session.user.id;
+            let newCartResponse = await fetch(newCartUrl);
+            const cart = await newCartResponse.json();
+            let cartJson = await cart.items;
             let cartItems = []
-            cart.forEach((item) => {
+            cartJson.forEach((item) => {
                 cartItems.push(item);
               });
             const mergedBookingsAndCart = [...updatedBookings, ...cartItems];
+            setAllBookings([...updatedBookings, ...mergedBookingsAndCart]);
             setFilteredBookings(mergedBookingsAndCart.filter((meeting) =>
                 isSameDay(parseISO(meeting.bookingDate), selectedDay)));
-
+            setBookedHours([...bookedHours, ...mergedBookingsAndCart.map((booking) => booking.bookingHour)])
             logBookings(mergedBookingsAndCart, selectedDay);
         }
     }
@@ -279,7 +286,7 @@ export default function Calendar({ bookings, cart }) {
                             {/* here is where we loop over the meetings */}
                             {filteredBookings.length > 0 ? (
                                 filteredBookings.map((meeting) => (
-                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting._id} updateCalendarState={updateCalendarState} />
+                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting.key} updateCalendarState={updateCalendarState} />
                                 ))
                             ) : (
                                 <p>No bookings today.</p>

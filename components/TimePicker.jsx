@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useSession, getSession } from "next-auth/react"
+import { v4 as uuidv4 } from 'uuid';
 
 
 const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHours, setBookedHours, filteredBookings }) => {
@@ -90,6 +91,7 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHo
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
+        const uniqueKey = uuidv4();
         try {
             const timePickerApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/addToCart";
             let response = await fetch(timePickerApiUrl, {
@@ -108,8 +110,8 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHo
                     productName: "Two Hours",
                     price: "price_1NQcKtK1A3hq7BalXT5wvjyv",
                     productPrice: 60,
-                    quantity: 1
-
+                    quantity: 1,
+                    key: uniqueKey,
                 }),
                 headers: {
                     Accept: "application/json, text/plain, */*",

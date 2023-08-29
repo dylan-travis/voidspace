@@ -1,5 +1,6 @@
 import clientPromise from "../../lib/mongodb";
 import { ObjectId } from "mongodb";
+import { v4 as uuidv4 } from 'uuid';
 
 export default async (req, res) => {
   try {
@@ -18,7 +19,8 @@ export default async (req, res) => {
       productPrice,
       quantity,
       imgUrl,
-      username
+      username,
+      key,
     } = req.body;
 
     // Generate a unique ProductId using MongoDB's ObjectId
@@ -37,7 +39,8 @@ export default async (req, res) => {
       productPrice,
       quantity,
       imgUrl,
-      username
+      username,
+      key,
     };
 
     const result = await db.collection("carts").findOneAndUpdate(
