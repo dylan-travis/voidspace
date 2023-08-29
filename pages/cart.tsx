@@ -8,7 +8,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@mui/material';
-import CheckoutForm from '../components/CheckoutForm';
 import {
     add,
     eachDayOfInterval,
@@ -23,53 +22,66 @@ import {
     parseISO,
     startOfToday,
 } from 'date-fns'
-import { useSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
 import formatHoursTo12HourClock from '../utils/24hr';
 
 let cartDetails = {}
     
-export async function getServerSideProps() {
-        try {
-            const cartApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings'
-            const response = await fetch(cartApiUrl);
-            const bookings = await response.json();
-            console.log(bookings)
-            // console.log(bookings)
-            return { props: { bookings } };
-        } catch (e) {
-            console.error(e);
-        }
-    }
-    
-
-const Cart = ({bookings}) => {
-    const [redirecting, setRedirecting] = useState(false);
-    const { data: session } = useSession()
-    const [cartDetails, setCartDetails] = useState(bookings); // Store the cart items in state
-
-    if (session) {
-        const userId = session.user.id;
-    }
-
-    async function removeItem(product, quantity) {
-        // console.log("remove " + JSON.stringify(product, quantity));
-    
-        try {
-          await fetch(`/api/deleteBooking?_id=${product._id}`, {
-            method: "DELETE"
-          });
-          
-          // If the item is successfully deleted from the backend, remove it from the cartDetails state.
-          setCartDetails((prevCartDetails) => {
-            const updatedCart = { ...prevCartDetails };
-            delete updatedCart[product._id];
-            return updatedCart;
-          });
-          
-        } catch (error) {
-          console.error(error);
-        }
+export async function getServerSideProps(context) {
+    try {
+      const session = await getSession(context);
+      
+      if (!session || !session.user) {
+        // Handle the case where the user is not authenticated
+        // You can redirect them to the login page or handle it as needed
+        return {
+          redirect: {
+            destination: '/login', // Redirect to the login page
+            permanent: false,
+          },
+        };
       }
+      
+      const userId = session.user.id;
+      const cartApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + `/api/getCart?userId=${userId}`;
+      const response = await fetch(cartApiUrl);
+  
+      if (!response.ok) {
+        // Handle the case where the API request was not successful
+        throw new Error(`Failed to fetch cart data: ${response.statusText}`);
+      }
+  
+      const cart = await response.json();
+      const items = cart.items;
+  
+      return { props: { cart, items, userId } };
+    } catch (e) {
+      console.error(e);
+      // Handle the error and still return an object with props
+      return { props: { error: 'An error occurred' } };
+    }
+  }    
+
+  const Cart = ({ cart, items, userId }) => {
+    const [redirecting, setRedirecting] = useState(false);
+    const { data: session } = useSession();
+    const [cartDetails, setCartDetails] = useState(items);
+  
+    async function removeItem(userId, productId) {
+      try {
+        await fetch(`/api/deleteFromCart?userId=${userId}&productId=${productId}`, {
+          method: "DELETE"
+        });
+  
+        // If the item is successfully deleted from the backend, update cartDetails without the deleted product.
+        setCartDetails((prevCartDetails) => {
+          const updatedCart = prevCartDetails.filter((product) => product.productId !== productId);
+          return updatedCart;
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
     const redirectToCheckout = async () => {
         // Create Stripe checkout
@@ -151,7 +163,7 @@ const Cart = ({bookings}) => {
 
                                 {/* Remove item */}
                                 <button
-                                    onClick={() => removeItem(product, product.quantity)}
+                                    onClick={() => removeItem(userId, product.productId)}
                                     className="ml-4 hover:text-rose-500"
                                 >
                                     <DeleteIcon className="w-6 h-6 flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity" />

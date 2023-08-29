@@ -26,9 +26,9 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     const buf = await buffer(req)
     const sig = req.headers['stripe-signature']!
 
-    console.log("buffer is: " + buf.toString())
-    console.log("sig is: " + sig)
-    console.log("headers: " + JSON.stringify(req.headers))
+    // console.log("buffer is: " + buf.toString())
+    // console.log("sig is: " + sig)
+    // console.log("headers: " + JSON.stringify(req.headers))
 
     let event: Stripe.Event
 

@@ -3,22 +3,19 @@ import { format } from 'date-fns';
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { useSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
 
 
-const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, setBookedHours, filteredBookings }) => {
+const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHours, setBookedHours, filteredBookings }) => {
 
     // State variables
     const [selectedHour, setSelectedHour] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [meetings, setMeetings] = useState([]);
-    // let [bookedHours, setBookedHours] = useState([]);
     const { data: session } = useSession()
     const [updatedBookings, setUpdatedBookings] = useState([])
     // Create a ref to hold the reference of the modal container
     const modalRef = useRef(null);
-
-    console.log(filteredBookings)
 
     // Function to handle click outside the modal
     const handleOutsideClick = (e) => {
@@ -27,30 +24,36 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
         }
     };
 
-
     // useEffect to initialize the updatedBookings state with the initial bookings data
     useEffect(() => {
         const bookedHoursSet = new Set(); // Using a Set to avoid duplicates
-
-        bookings.forEach((booking) => {
-            const { bookingDate, bookingHour } = booking;
-            bookedHoursSet.add({ date: bookingDate, hour: bookingHour });
+        const cartItems = []
+        cart.forEach((item) => {
+            cartItems.push(item);
+          });
+        const mergedArray = [...cartItems, ...bookings];
+        mergedArray.forEach((booking) => {
+            const { bookingDate, bookingHour, confirmed } = booking;
+            bookedHoursSet.add({ date: bookingDate, hour: bookingHour, confirmed: confirmed });
         });
 
         setBookedHours(Array.from(bookedHoursSet));
         setUpdatedBookings(Array.from(bookedHoursSet));
-        console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
     }, [bookings, setBookedHours]);
 
     // useEffect to update the updatedBookings state whenever the bookings prop changes
     useEffect(() => {
         const bookedHoursSet = new Set();
-
-        bookings.forEach((booking) => {
-            const { bookingDate, bookingHour } = booking;
-            bookedHoursSet.add({ date: bookingDate, hour: bookingHour });
+        const cartItems = []
+        cart.forEach((item) => {
+            cartItems.push(item);
+          });
+        const mergedArray = [...cartItems, ...bookings];
+        mergedArray.forEach((booking) => {
+            const { bookingDate, bookingHour, confirmed } = booking;
+            bookedHoursSet.add({ date: bookingDate, hour: bookingHour, confirmed: confirmed });
         });
-
+        console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
         setUpdatedBookings(Array.from(bookedHoursSet));
     }, [bookings]); 1
     // Add click event listener when the modal opens
@@ -88,10 +91,11 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         try {
-            const timePickerApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/addBooking";
+            const timePickerApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/addToCart";
             let response = await fetch(timePickerApiUrl, {
                 method: "POST",
                 body: JSON.stringify({
+                    userId: session.user.id,
                     id: session.user.id,
                     username: session.user.username,
                     bookingDate: selectedDay,
@@ -113,12 +117,9 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                 },
             });
             response = await response.json();
-            console.log("response from handleBookingSubmit" + JSON.stringify(response))
             // Invoke the updateCalendarState prop to trigger the state update in the Calendar component
             setIsModalOpen(false);
             updateCalendarState(response);
-            console.log("Bookings object is now: " + JSON.stringify(bookings))
-            console.log("Filtered bookings is now: " + JSON.stringify(filteredBookings))
         } catch (errorMessage) {
             console.error(errorMessage);
         }

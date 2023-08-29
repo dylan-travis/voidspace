@@ -5,10 +5,10 @@ export default async (req, res) => {
     try {
         const client = await clientPromise;
         const db = client.db("test");
-        const { id } = req.query;
+        const { userId } = userId;
 
         const post = await db.collection("bookings").findOne({
-            _id: ObjectId(id),
+            _id: ObjectId(userId),
         });
 
         res.json(booking);
