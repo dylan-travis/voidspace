@@ -43,7 +43,7 @@ export async function getServerSideProps(context) {
       const userId = session.user.id;
       const username = session.user.username;
       const userEmail = session.user.email;
-  
+        
       // Fetch bookings if available, or set to an empty array if not
       let bookings = [];
       const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getBookings";
@@ -70,10 +70,10 @@ export async function getServerSideProps(context) {
       const cartJson = await cartResponse.json();
       if (cartJson.items == undefined) {
         const cart = [];
-        return { props: { bookings, cart, userId } };
+        return { props: { session, username, bookings, cart, userId } };
       } else {
         const cart = cartJson.items;
-        return { props: { bookings, cart, userId } };
+        return { props: { session, username, bookings, cart, userId } };
       }
     } catch (e) {
       console.error(e);
@@ -83,62 +83,88 @@ export async function getServerSideProps(context) {
   
 
 // Displays calendar and booked appointments
-export default function Calendar({ bookings, cart }) {
-    const { data: session, status } = useSession()
+export default function Calendar({ bookings, cart, username }) {
     let today = startOfToday()
+    const { data: session, status } = useSession()
     let [selectedDay, setSelectedDay] = useState(today)
     const [filteredBookings, setFilteredBookings] = useState([]);
     const [allBookings, setAllBookings] = useState([]);
     let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'))
-    let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date())
     const [bookedHours, setBookedHours] = useState([]);
+    let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date())
 
     let days = eachDayOfInterval({
         start: firstDayCurrentMonth,
         end: endOfMonth(firstDayCurrentMonth),
     });
 
-    // Updates Calendar state from Timepicker - establishes a connection between the two components in order to show new meetings as they are created.
-    async function updateCalendarState(response, cart) {
-        // Logic to update the state in the Calendar component
-        // Update the bookings state with the new meeting from the response (if available)
-        if (response, cart) {
-            let newResponseApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings';
-            let newResponse = await fetch(newResponseApiUrl);
-            const updatedBookings = await newResponse.json();
-            let cartItems = []
-            cart.forEach((item) => {
-                cartItems.push(item);
-              });
-            const mergedBookingsAndCart = [...updatedBookings, ...cartItems];
-            // Add the new meeting to the existing allBookings array using spread operator
-            setAllBookings([...updatedBookings, ...mergedBookingsAndCart]);
-            // Takes the updatedBookings array and filters it to only show the meetings that match the selected day
-            setFilteredBookings(mergedBookingsAndCart.filter((meeting) =>
-                isSameDay(parseISO(meeting.bookingDate), selectedDay)));
-            setBookedHours([...bookedHours, ...mergedBookingsAndCart.map((booking) => booking.bookingHour)])
-        }
-        else {
-            let newResponseApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings';
-            let newResponse = await fetch(newResponseApiUrl);
-            const newResponseJson = await newResponse.json();
-            const updatedBookings = await newResponseJson[0].items;
-            let newCartUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getCart?userId=' + session.user.id;
-            let newCartResponse = await fetch(newCartUrl);
-            const cart = await newCartResponse.json();
-            let cartJson = await cart.items;
-            let cartItems = []
-            cartJson.forEach((item) => {
-                cartItems.push(item);
-              });
-            const mergedBookingsAndCart = [...updatedBookings, ...cartItems];
-            setAllBookings([...updatedBookings, ...mergedBookingsAndCart]);
-            setFilteredBookings(mergedBookingsAndCart.filter((meeting) =>
-                isSameDay(parseISO(meeting.bookingDate), selectedDay)));
-            setBookedHours([...bookedHours, ...mergedBookingsAndCart.map((booking) => booking.bookingHour)])
-            logBookings(mergedBookingsAndCart, selectedDay);
+    async function fetchUpdatedBookings(userId) {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + `/api/getBookings`;
+            const response = await fetch(apiUrl);
+            if (response.ok) {
+                let updatedBookings = [];
+                const updatedBookingsJson = await response.json();
+                const updatedBookingsMap = updatedBookingsJson.map((booking) => booking.items);
+                if (updatedBookingsMap.length > 0) {
+                updatedBookings = updatedBookingsMap;
+                }
+                console.log(updatedBookings)
+                return updatedBookings;
+            } else {
+                throw new Error('Failed to fetch updated bookings');
+            }
+        } catch (error) {
+            console.error('Error fetching updated bookings:', error);
+            throw error;
         }
     }
+    
+    // Define a function to fetch updated cart data
+    async function fetchUpdatedCart(userId) {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + `/api/getCart?userId=${userId}`;
+            const response = await fetch(apiUrl);
+            if (response.ok) {
+                const cartItems = await response.json();
+                let updatedCart = [];
+                if (cartItems.items) {
+                updatedCart = cartItems.items;
+            }
+                console.log(updatedCart)
+                return updatedCart;
+            } else {
+                throw new Error('Failed to fetch updated cart');
+            }
+        } catch (error) {
+            console.error('Error fetching updated cart:', error);
+            throw error;
+        }
+    }
+
+    // Updates Calendar state from Timepicker - establishes a connection between the two components in order to show new meetings as they are created.
+    async function updateCalendarState() {
+        // Fetch updated bookings and cart data here
+        const updatedBookings = await fetchUpdatedBookings(session.user.id, username);
+        const updatedCart = await fetchUpdatedCart(session.user.id, username);
+        let mergedData = [];
+        if (updatedBookings.length >= 1) {
+         mergedData = [...updatedBookings[0], ...updatedCart];}
+        else {
+         mergedData = updatedCart
+        }
+        setAllBookings(mergedData);
+        setFilteredBookings(
+            mergedData.filter((meeting) =>
+                isSameDay(parseISO(meeting.bookingDate), selectedDay)
+            )
+        );
+        console.log("Filtered bookings:" + JSON.stringify(filteredBookings))
+        setBookedHours(
+            mergedData.map((booking) => booking.bookingHour)
+        );
+    }
+    
 
     // Deletes meeting from DB
     const handleDeleteMeeting = (bookingId) => {
@@ -146,29 +172,12 @@ export default function Calendar({ bookings, cart }) {
             prevBookings.filter((meeting) => meeting._id !== bookingId)
         );
     };
-
-    // Filtering logic for bookings goes here - looks at the selected day and pulls all meetings that match that day. This is the setFilteredBookings object.
-    async function logBookings() {
-        try {
-            let cartItems = []
-            cart.forEach((item) => {
-                cartItems.push(item);
-              });
-            const allBookings = [...bookings, ...cartItems];
-            const selectedDayBookings = allBookings.filter((meeting) =>
-                isSameDay(parseISO(meeting.bookingDate), selectedDay)
-            );
-            setAllBookings(allBookings);
-            setFilteredBookings(selectedDayBookings);
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    
     // Note that logBookings is asynchronously called in several locations in this file. This is because we need to wait for the bookings to be fetched from the DB before we can filter them.
     useEffect(() => {
 
-        logBookings();
-    }, [selectedDay]);
+        updateCalendarState();
+    }, []);
 
     // Functions for navigating the calendar
     function previousMonth() {
@@ -286,7 +295,7 @@ export default function Calendar({ bookings, cart }) {
                             {/* here is where we loop over the meetings */}
                             {filteredBookings.length > 0 ? (
                                 filteredBookings.map((meeting) => (
-                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting.key} updateCalendarState={updateCalendarState} />
+                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting.key} updateCalendarState={updateCalendarState} username={username} />
                                 ))
                             ) : (
                                 <p>No bookings today.</p>
@@ -302,12 +311,11 @@ export default function Calendar({ bookings, cart }) {
 }
 
 // Displays Meetings within the calendar
-function Meeting({ meeting, handleDeleteMeeting }) {
+function Meeting({ meeting, handleDeleteMeeting, username }) {
     let startDateTime = parseISO(meeting.bookingDate)
     let endDateTime = parseISO(meeting.endBookingDate)
     let bookingHourStart = formatHoursTo12HourClock(meeting.bookingHour)
     let bookingHourEnd = formatHoursTo12HourClock(meeting.endBookingHour)
-
     const handleDeleteBooking = async (bookingId) => {
         const deleteBookingApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/deleteBooking';
         try {
@@ -361,7 +369,21 @@ function Meeting({ meeting, handleDeleteMeeting }) {
                 className="flex-none w-10 h-10 rounded-full"
             />
             <div className="flex-auto">
-                <p className="text-gray-900">{meeting.username} {meeting.confirmed ? <span className="italic text-green-500"> (confirmed)</span> : <span className="italic text-red-600"> (unconfirmed)</span>}</p>
+                <p className="text-gray-900">
+                    {meeting.username === username ? (
+                        <>
+                        {meeting.username}
+                        {meeting.confirmed ? (
+                            <span className="italic text-green-500"> (confirmed)</span>
+                        ) : (
+                            <span className="italic text-red-600"> (unconfirmed)</span>
+                        )}
+                        </>
+                    ) : (
+                        // Display a placeholder name if the user doesn't match
+                        'Booked'
+                    )}
+                </p>    
                 <p className="mt-0.5">
                     <time dateTime={meeting.startDatetime}>
                         {bookingHourStart}

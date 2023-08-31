@@ -1,6 +1,8 @@
 import clientPromise from "../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import Stripe from 'stripe';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // https://github.com/stripe/stripe-node#configuration
@@ -11,10 +13,10 @@ export default async (req, res) => {
   try {
     const client = await clientPromise;
     const db = client.db("test");
-    const { userId, username, userEmail } = req.body;
+    const { _id, userId, username, userEmail, key } = req.body;
 
     // Check if a cart already exists for the user
-    const existingCart = await db.collection("carts").findOne({ _id: new ObjectId(userId) });
+    const existingCart = await db.collection("carts").findOne({ userId });
 
     if (existingCart) {
       // If a cart exists, do nothing and return the existing cart
@@ -30,10 +32,11 @@ export default async (req, res) => {
       console.log("customer created: " + JSON.stringify(customer))
       // If no cart exists, create a new cart
       const newCart = await db.collection("carts").insertOne({
-        _id: new ObjectId(userId),
+        _id: new ObjectId(),
         stripeId: customer.id,
         userId: userId,
-        username
+        username,
+        key
       });
 
       res.json(newCart);

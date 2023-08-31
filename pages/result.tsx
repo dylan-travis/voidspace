@@ -43,7 +43,7 @@ export default function ResultPage({ success, error }) {
   useEffect(() => {
     if (isSuccess) {
       setTimeout(() => {
-        router.push('/');
+        router.push('/booking');
       }, 5000);
     }
   }, [isSuccess, router]);

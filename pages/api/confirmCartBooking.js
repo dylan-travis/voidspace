@@ -1,6 +1,8 @@
 import clientPromise from "../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import Stripe from 'stripe';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export default async (req, res) => {
   try {
@@ -8,7 +10,7 @@ export default async (req, res) => {
     const db = client.db("test");
     const { userId } = req.query; // Updated variable name
 
-    const cart = await db.collection("carts").findOne({ _id: new ObjectId(userId) });
+    const cart = await db.collection("carts").findOne({ userId });
 
     if (!cart) {
       console.error("Cart not found");
@@ -22,10 +24,9 @@ export default async (req, res) => {
     
     // Insert into the "bookings" collection
     const result = await db.collection("bookings").insertOne(cart);
-    console.log("result is " + JSON.stringify(result));
     // Remove from the "carts" collection
     if (result.acknowledged === true) {
-      const deleteResult = await db.collection("carts").deleteOne(cart);
+      const deleteResult = await db.collection("carts").deleteOne({ userId });
       if (deleteResult.acknowledged === true) {
         console.log("Cart moved to bookings and removed from cart successfully.");
       } else {

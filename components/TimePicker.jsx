@@ -7,7 +7,7 @@ import { useSession, getSession } from "next-auth/react"
 import { v4 as uuidv4 } from 'uuid';
 
 
-const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHours, setBookedHours, filteredBookings }) => {
+const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, setBookedHours, filteredBookings }) => {
 
     // State variables
     const [selectedHour, setSelectedHour] = useState(null);
@@ -15,6 +15,7 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHo
     const [meetings, setMeetings] = useState([]);
     const { data: session } = useSession()
     const [updatedBookings, setUpdatedBookings] = useState([])
+    const [cart, setCart] = useState([]);
     // Create a ref to hold the reference of the modal container
     const modalRef = useRef(null);
 
@@ -56,7 +57,8 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHo
         });
         console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
         setUpdatedBookings(Array.from(bookedHoursSet));
-    }, [bookings]); 1
+    }, [bookings, cart]);
+
     // Add click event listener when the modal opens
     useEffect(() => {
         if (isModalOpen) {
@@ -119,6 +121,10 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, cart, bookedHo
                 },
             });
             response = await response.json();
+
+            // Update the cart state by creating a new array with the new item
+            setCart((prevCart) => [...cart, response]);
+
             // Invoke the updateCalendarState prop to trigger the state update in the Calendar component
             setIsModalOpen(false);
             updateCalendarState(response);

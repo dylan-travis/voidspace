@@ -8,7 +8,7 @@ export default async (req, res) => {
         const { userId } = req.query;
 
         const cart = await db.collection("carts").findOne({
-            _id: new ObjectId(userId),
+            userId
         });
 
         if (cart) {

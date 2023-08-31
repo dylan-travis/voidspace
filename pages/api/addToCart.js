@@ -7,6 +7,7 @@ export default async (req, res) => {
     const client = await clientPromise;
     const db = client.db("test");
     const {
+      _id,
       userId,
       bookingDate,
       bookingHour,
@@ -27,6 +28,8 @@ export default async (req, res) => {
     const productId = new ObjectId().toString();
 
     const cartItem = {
+      _id,
+      userId,
       bookingDate,
       bookingHour,
       endBookingDate,
@@ -44,7 +47,7 @@ export default async (req, res) => {
     };
 
     const result = await db.collection("carts").findOneAndUpdate(
-      { _id: new ObjectId(userId) },
+      { userId },
       {
         $push: { items: cartItem }
       },
