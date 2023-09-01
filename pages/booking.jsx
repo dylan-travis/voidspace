@@ -109,7 +109,7 @@ export default function Calendar({ bookings, cart, username }) {
                 if (updatedBookingsMap.length > 0) {
                 updatedBookings = updatedBookingsMap;
                 }
-                console.log(updatedBookings)
+                updatedBookings = updatedBookings.flat();
                 return updatedBookings;
             } else {
                 throw new Error('Failed to fetch updated bookings');
@@ -131,7 +131,6 @@ export default function Calendar({ bookings, cart, username }) {
                 if (cartItems.items) {
                 updatedCart = cartItems.items;
             }
-                console.log(updatedCart)
                 return updatedCart;
             } else {
                 throw new Error('Failed to fetch updated cart');
@@ -149,18 +148,16 @@ export default function Calendar({ bookings, cart, username }) {
         const updatedCart = await fetchUpdatedCart(session.user.id, username);
         let mergedData = [];
         if (updatedBookings.length >= 1) {
-         mergedData = [...updatedBookings[0], ...updatedCart];}
+         mergedData = [...updatedBookings, ...updatedCart];}
         else {
          mergedData = updatedCart
         }
         setAllBookings(mergedData);
-        console.log("Merged data: " + JSON.stringify(mergedData));
         setFilteredBookings(
             mergedData.filter((meeting) =>
                 isSameDay(parseISO(meeting.bookingDate), selectedDay)
             )
         );
-        console.log("Filtered bookings:" + JSON.stringify(filteredBookings))
         setBookedHours(
             mergedData.map((booking) => booking.bookingHour)
         );
@@ -401,7 +398,8 @@ function Meeting({ meeting, handleDeleteMeeting, username }) {
 
                 </p>
             </div>
-            <Menu
+            {/* 3 dot menu currently deactivated /*}
+            {/* <Menu
                 as="div"
                 className="relative opacity-0 focus-within:opacity-100 group-hover:opacity-100"
             >
@@ -444,7 +442,7 @@ function Meeting({ meeting, handleDeleteMeeting, username }) {
                         </div>
                     </Menu.Items>
                 </Transition>
-            </Menu>
+            </Menu> */}
         </li>
     )
 }

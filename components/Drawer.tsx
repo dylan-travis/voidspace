@@ -16,10 +16,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
+import { signOut, signIn, useSession } from "next-auth/react"
+
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export default function TemporaryDrawer() {
+    const { data: session, status } = useSession()
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -71,7 +74,7 @@ export default function TemporaryDrawer() {
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <List>
-                {['Home', 'Booking', 'Contact', 'Profile'].map((text) => (
+                {['Home', 'Booking', 'Contact', ].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon>
@@ -83,8 +86,9 @@ export default function TemporaryDrawer() {
                 ))}
             </List>
             <Divider />
+            {status === 'authenticated' && (
             <List>
-                {['Cart', 'Login', 'Logout'].map((text) => (
+                {['Profile', 'Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon>
@@ -95,6 +99,21 @@ export default function TemporaryDrawer() {
                     </ListItem>
                 ))}
             </List>
+            )}
+            {status === 'unauthenticated' && (
+            <List>
+                {['Login'].map((text) => (
+                    <ListItem key={text} disablePadding>
+                        <ListItemButton href={linkMapping[text]}>
+                            <ListItemIcon>
+                                {iconMapping[text]}
+                            </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
+            )}
         </Box>
     );
 

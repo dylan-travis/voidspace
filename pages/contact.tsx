@@ -50,6 +50,8 @@ export default function Contact() {
                 <p>Figueroa Studios is a production and rehearsal space located in Los Angeles. We provide an accessible, affordable place to be creative and loud. Our air-conditioned studio is in a beautiful garden location near Downtown LA. Parking is provided and we offer engineering/production support on request. We are a 5 minute walk from the Metro A line and multiple bus lines.</p>
                 <h3 className="mb-4 text-4xl font-bold text-center text-gray-900 dark:text-white pt-5">Booking:</h3>
                 <p>In order to book, please <Link href="/register" className="text-sky-400/100">update your profile.</Link> Once you have added all required fields, you can use our <Link href="/booking" className="text-sky-400/100">booking form</Link> to complete your booking.</p>
+                <h3 className="mb-4 text-4xl font-bold text-center text-gray-900 dark:text-white pt-5">Cancellations</h3>
+                <p className="text-center">To cancel, please reach out to us via text or email. We will process your refund within 24 hours. Cancelations with less than 24 hour notice are subject to a $10 fee.</p>
                 <h3 className="mb-4 text-4xl font-bold text-center text-gray-900 dark:text-white pt-5">Gear:</h3>
                 <p className="text-center italic">Gear availability is subject to change. Please reach out to us if you will need something specific for your session!</p>
                 <div className="columns-3xs pt-4">

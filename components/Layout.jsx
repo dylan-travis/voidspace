@@ -12,7 +12,7 @@ import { ThemeProvider } from '@mui/material/styles';
 const Layout = ({ children }) => (
   <Container maxWidth="md">
     <Head>
-      <title>Fig Studios</title>
+      <title>Voidspace</title>
     </Head>
     <ButtonAppBar position="static"><NavBar /></ButtonAppBar>
     <main id="app" className="md:container md:mx-auto" data-testid="layout">

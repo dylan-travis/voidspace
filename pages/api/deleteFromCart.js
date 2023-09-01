@@ -5,12 +5,12 @@ export default async (req, res) => {
   try {
     const client = await clientPromise;
     const db = client.db("test");
-    const { userId, productId } = req.query; // Updated variable name
+    const { userId, key } = req.query; // Updated variable name
 
     const result = await db.collection("carts").updateOne(
-      { _id: new ObjectId(userId) },
+      { userId: userId },
       {
-        $pull: { items: { productId } } // Use productId here
+        $pull: { items: { key } } // Use key here
       }
     );
 

@@ -16,6 +16,8 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
     const { data: session } = useSession()
     const [updatedBookings, setUpdatedBookings] = useState([])
     const [cart, setCart] = useState([]);
+    const [includeEngineer, setIncludeEngineer] = useState(false);
+
     // Create a ref to hold the reference of the modal container
     const modalRef = useRef(null);
 
@@ -55,7 +57,7 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
             const { bookingDate, bookingHour, confirmed } = booking;
             bookedHoursSet.add({ date: bookingDate, hour: bookingHour, confirmed: confirmed });
         });
-        console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
+        // console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
         setUpdatedBookings(Array.from(bookedHoursSet));
     }, [bookings, cart]);
 
@@ -96,29 +98,51 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
         const uniqueKey = uuidv4();
         try {
             const timePickerApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/addToCart";
+            const withEngineer = includeEngineer;
+            let withEngineerBody = JSON.stringify({
+                userId: session.user.id,
+                id: session.user.id,
+                username: session.user.username,
+                bookingDate: selectedDay,
+                bookingHour: selectedHour,
+                endBookingHour: selectedHour + 2,
+                endBookingDate: selectedDay,
+                imgUrl: "/blacksquare.jpg",
+                date: Date.now(),
+                confirmed: false,
+                productName: "Two Hours with Engineer",
+                price: "price_1NleGuK1A3hq7BalHOpwdQqU",
+                productPrice: 110,
+                quantity: 1,
+                key: uniqueKey,
+                engineer: includeEngineer, // Include engineer in the request
+            });
+            let withoutEngineerBody = JSON.stringify({
+                userId: session.user.id,
+                id: session.user.id,
+                username: session.user.username,
+                bookingDate: selectedDay,
+                bookingHour: selectedHour,
+                endBookingHour: selectedHour + 2,
+                endBookingDate: selectedDay,
+                imgUrl: "/blacksquare.jpg",
+                date: Date.now(),
+                confirmed: false,
+                productName: "Two Hours",
+                price: "price_1NQcKtK1A3hq7BalXT5wvjyv",
+                productPrice: 60,
+                quantity: 1,
+                key: uniqueKey,
+                engineer: includeEngineer, // No engineer
+            });
             let response = await fetch(timePickerApiUrl, {
                 method: "POST",
-                body: JSON.stringify({
-                    userId: session.user.id,
-                    id: session.user.id,
-                    username: session.user.username,
-                    bookingDate: selectedDay,
-                    bookingHour: selectedHour,
-                    endBookingHour: selectedHour + 2,
-                    endBookingDate: selectedDay,
-                    imgUrl: "/blacksquare.jpg",
-                    date: Date.now(),
-                    confirmed: false,
-                    productName: "Two Hours",
-                    price: "price_1NQcKtK1A3hq7BalXT5wvjyv",
-                    productPrice: 60,
-                    quantity: 1,
-                    key: uniqueKey,
-                }),
+                body: withEngineer ? withEngineerBody : withoutEngineerBody,
                 headers: {
                     Accept: "application/json, text/plain, */*",
                     "Content-Type": "application/json",
                 },
+                
             });
             response = await response.json();
 
@@ -192,7 +216,7 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                                         <h2 className="text-xl font-bold mb-4 text-center">Book the Studio:</h2>
                                         <p className="text-med italic  text-center">{formatHoursTo12HourClock(selectedHour)}-{formatHoursTo12HourClock(selectedHour + 2)} </p>
                                         <p className="text-med italic mb-4 text-center">{format(new Date(selectedDay), 'dd MMMM, yyyy')}</p>
-                                        <input type="checkbox" className="ml-4"></input> <span className="text-sm italic text-center">Include an engineer ($50/hr)
+                                        <input type="checkbox" className="ml-4" checked={includeEngineer} onChange={(e) => setIncludeEngineer(e.target.checked)}></input> <span className="text-sm italic text-center">Include an engineer ($50/hr)
                                         </span></div>
                                     <label htmlFor="description">Comments:</label>
                                     <textarea id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />

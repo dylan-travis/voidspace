@@ -67,15 +67,15 @@ export async function getServerSideProps(context) {
     const { data: session } = useSession();
     const [cartDetails, setCartDetails] = useState(items);
   
-    async function removeItem(userId, productId) {
+    async function removeItem(userId, key) {
       try {
-        await fetch(`/api/deleteFromCart?userId=${userId}&productId=${productId}`, {
+        await fetch(`/api/deleteFromCart?userId=${userId}&key=${key}`, {
           method: "DELETE"
         });
   
         // If the item is successfully deleted from the backend, update cartDetails without the deleted product.
         setCartDetails((prevCartDetails) => {
-          const updatedCart = prevCartDetails.filter((product) => product.productId !== productId);
+          const updatedCart = prevCartDetails.filter((product) => product.key !== key);
           return updatedCart;
         });
       } catch (error) {
@@ -121,7 +121,7 @@ export async function getServerSideProps(context) {
     return (
         <>
             <Head>
-                <title>My Shopping Cart | Figueroa Studios</title>
+                <title>My Shopping Cart | Voidspace</title>
             </Head>
             {/* Main Div */}
             <div className="container xl:max-w-screen-xl mx-auto py-12 px-6">
@@ -163,7 +163,7 @@ export async function getServerSideProps(context) {
 
                                 {/* Remove item */}
                                 <button
-                                    onClick={() => removeItem(userId, product.productId)}
+                                    onClick={() => removeItem(userId, product.key)}
                                     className="ml-4 hover:text-rose-500"
                                 >
                                     <DeleteIcon className="w-6 h-6 flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
