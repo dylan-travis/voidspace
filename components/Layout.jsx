@@ -10,12 +10,12 @@ import { ThemeProvider } from '@mui/material/styles';
 
 
 const Layout = ({ children }) => (
-  <Container maxWidth="md">
+  <Container maxWidth="md" className="dark:bg-black">
     <Head>
       <title>Voidspace</title>
     </Head>
-    <ButtonAppBar position="static"><NavBar /></ButtonAppBar>
-    <main id="app" className="md:container md:mx-auto" data-testid="layout">
+    <ButtonAppBar position="static" className="dark:bg-black"><NavBar className="dark:bg-black" /></ButtonAppBar>
+    <main id="app" className="md:container md:mx-auto dark:bg-black" data-testid="layout">
       <div className="md:container md:mx-auto">{children}</div>
       <Footer />
     </main>

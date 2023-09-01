@@ -13,15 +13,16 @@ dotenv.config();
 const theme = createTheme({
   palette: {
     primary: {
-      light: '#FFF',
-      main: '#FFF',
-      dark: '#FFF',
+      light: 'white',
+      main: '#000',
+      dark: '#000',
       contrastText: '#000',
     },
     secondary: {
-      light: '#000',
-      main: '#000',
-      dark: '#000',
+      light: 'blue',
+      main: 'blue',
+      dark: 'blue',
+      contrastText: '#FFF',
     }
   },
 });

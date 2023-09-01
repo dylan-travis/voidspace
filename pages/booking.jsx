@@ -206,14 +206,14 @@ export default function Calendar({ bookings, cart, username }) {
             <div className="max-w-md px-4 mx-auto sm:px-7 md:max-w-4xl md:px-6">
                 <div className="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
                     <div className="md:pr-14">
-                        <div className="flex items-center">
-                            <h2 className="flex-auto font-semibold text-gray-900">
+                        <div className="flex items-center dark:text-white">
+                            <h2 className="flex-auto font-semibold text-gray-900 dark:text-white">
                                 {format(firstDayCurrentMonth, 'MMMM yyyy')}
                             </h2>
                             <button
                                 type="button"
                                 onClick={previousMonth}
-                                className="-my-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                                className="-my-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-white"
                             >
                                 <span className="sr-only">Previous month</span>
                                 <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
@@ -221,13 +221,13 @@ export default function Calendar({ bookings, cart, username }) {
                             <button
                                 onClick={nextMonth}
                                 type="button"
-                                className="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                                className="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-white"
                             >
                                 <span className="sr-only">Next month</span>
                                 <ChevronRightIcon className="w-5 h-5" aria-hidden="true" />
                             </button>
                         </div>
-                        <div className="grid grid-cols-7 mt-10 text-xs leading-6 text-center text-gray-500">
+                        <div className="grid grid-cols-7 mt-10 text-xs leading-6 text-center text-gray-500 dark:text-white">
                             <div>S</div>
                             <div>M</div>
                             <div>T</div>
@@ -236,7 +236,7 @@ export default function Calendar({ bookings, cart, username }) {
                             <div>F</div>
                             <div>S</div>
                         </div>
-                        <div className="grid grid-cols-7 mt-2 text-sm">
+                        <div className="grid grid-cols-7 mt-2 text-sm dark:text-white">
                             {days.map((day, dayIdx) => (
                                 <div
                                     key={day.toString()}
@@ -256,16 +256,16 @@ export default function Calendar({ bookings, cart, username }) {
                                             !isEqual(day, selectedDay) &&
                                             !isToday(day) &&
                                             isSameMonth(day, firstDayCurrentMonth) &&
-                                            'text-gray-900',
+                                            'text-gray-900 dark:text-white',
                                             !isEqual(day, selectedDay) &&
                                             !isToday(day) &&
                                             !isSameMonth(day, firstDayCurrentMonth) &&
-                                            'text-gray-400',
+                                            'text-gray-400 dark:text-white',
                                             isEqual(day, selectedDay) && isToday(day) && 'bg-red-500',
                                             isEqual(day, selectedDay) &&
                                             !isToday(day) &&
-                                            'bg-gray-900',
-                                            !isEqual(day, selectedDay) && 'hover:bg-gray-200',
+                                            'bg-gray-900 dark:bg-white dark:text-black',
+                                            !isEqual(day, selectedDay) && 'hover:bg-gray-200 dark:hover:bg-gray-700',
                                             (isEqual(day, selectedDay) || isToday(day)) &&
                                             'font-semibold',
                                             'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
@@ -288,13 +288,13 @@ export default function Calendar({ bookings, cart, username }) {
                         </div>
                     </div>
                     <section className="mt-12 md:mt-0 md:pl-14">
-                        <h2 className="font-semibold text-gray-900">
+                        <h2 className="font-semibold text-gray-900 dark:text-white ">
                             Bookings for{' '}
                             <time dateTime={format(selectedDay, 'yyyy-MM-dd')}>
                                 {format(selectedDay, 'MMM dd, yyy')}
                             </time>
                         </h2>
-                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
+                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500 dark:text-white dark:bg-black">
                             {/* here is where we loop over the meetings */}
                             {filteredBookings.length > 0 ? (
                                 filteredBookings.map((meeting) => (
@@ -365,14 +365,14 @@ function Meeting({ meeting, handleDeleteMeeting, username }) {
     }
 
     return (
-        <li key={meeting._id} className="flex items-center px-4 py-2 space-x-4 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-100">
+        <li key={meeting._id} className="flex items-center px-4 py-2 space-x-4 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
             <img
                 src="/blacksquare.jpg"
                 alt=""
                 className="flex-none w-10 h-10 rounded-full"
             />
             <div className="flex-auto">
-                <p className="text-gray-900">
+                <p className="text-gray-900 dark:text-white">
                     {meeting.username === username ? (
                         <>
                         {meeting.username}

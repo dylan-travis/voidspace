@@ -52,7 +52,8 @@ export async function getServerSideProps(context) {
       }
   
       const cart = await response.json();
-      const items = cart.items;
+      let items = null;
+      if(cart.items){items = cart.items;} else {cartDetails = {};}
   
       return { props: { cart, items, userId } };
     } catch (e) {
@@ -124,22 +125,22 @@ export async function getServerSideProps(context) {
                 <title>My Shopping Cart | Voidspace</title>
             </Head>
             {/* Main Div */}
-            <div className="container xl:max-w-screen-xl mx-auto py-12 px-6">
-            {Object.keys(cartDetails).length != 0 && (
+            <div className="container xl:max-w-screen-xl mx-auto py-12 px-6 dark:text-white">
+            {cartDetails && Object.keys(cartDetails).length && (
                     <>
-                        <h2 className="text-4xl font-semibold text-center">Your shopping cart</h2>
+                        <h2 className="text-4xl font-semibold text-center dark:text-white">Your shopping cart</h2>
                     </>)}
                 {/* Product Banner */}
                 <div className="mt-12">
-                    {Object.entries(cartDetails).map(([key, product]) => (
+                    {cartDetails && Object.entries(cartDetails).map(([key, product]) => (
                         <div
                             key={key}
                             className="flex justify-between space-x-4 hover:shadow-lg hover:border-opacity-50 border border-opacity-0 rounded-md p-4"
                         >
                             {/* Image + Name */}
 
-                            <a className="flex items-center space-x-4 group">
-                                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform">
+                            <a className="flex items-center space-x-4 group dark:text-white">
+                                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform dark:text-white">
                                     <Image
                                         src="/blacksquare.jpg"
                                         alt={product.productName}
@@ -147,14 +148,14 @@ export async function getServerSideProps(context) {
                                         height={80}
                                     />
                                 </div>
-                                <p className="font-semibold text-xl group-hover:underline">
+                                <p className="font-semibold text-xl group-hover:underline dark:text-white">
                                     {product.productName}
                                 </p>
-                                <p className="text-gray-500  italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
+                                <p className="text-gray-500 dark:text-white italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
 
                             </a>
                             {/* Quantity */}
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-3 dark:text-white">
                                 {/* Price */}
                                 <p className="font-semibold text-xl ml-16">
 
@@ -173,7 +174,7 @@ export async function getServerSideProps(context) {
                     ))}
                 </div>
                 {/* Checkout and Clear Buttons */}
-                     {Object.keys(cartDetails).length != 0 && (
+                     {cartDetails && Object.keys(cartDetails).length != 0 && (
                     <div className="pt-8 text-center">
                         <Button
                             variant="contained" color="primary" 
@@ -185,9 +186,9 @@ export async function getServerSideProps(context) {
                             Clear all
                         </Button>
                     </div>)}
-                {Object.keys(cartDetails).length == 0 && (
+                    {cartDetails == null && (
                     <>
-                        <h2 className="text-4xl font-semibold pb-8">
+                        <h2 className="text-4xl font-semibold pb-8 dark:text-white">
                             Your shopping cart is empty.
                         </h2>
                         <p className="mt-1 text-xl">
@@ -196,10 +197,11 @@ export async function getServerSideProps(context) {
 
                             </Link>
                         </p>
-                    </>
-                )}
+                    </>)}
+                
             </div>
-        </>)
+            </>
+        );
 };     
         
 

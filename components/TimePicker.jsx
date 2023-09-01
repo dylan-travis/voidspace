@@ -187,10 +187,16 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
             return (
                 <Button
                     key={(hour)}
-                    className={`${isBooked ? 'disabled bg-gray-300 hover:bg-gray-300' : ''}`}
+                    className={`${isBooked ? 'disabled dark:bg-red-500' : 'dark:bg-white'}`}
                     onClick={() => handleHourClick(hour)}
                     disabled={isBooked}
                     variant="contained"
+                    sx={{
+                        "&.Mui-disabled": {
+                          background: "#FFF",
+                          color: "gray-400"
+                        }
+                      }}
                 >
                     {americanHours}
                 </Button>
@@ -232,7 +238,6 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                                     <Button
                                         type="submit"
                                         variant="contained"
-                                        color="primary"
                                     >
                                         Add to Cart
                                     </Button>

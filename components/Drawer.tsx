@@ -88,7 +88,7 @@ export default function TemporaryDrawer() {
             <Divider />
             {status === 'authenticated' && (
             <List>
-                {['Profile', 'Cart', 'Logout'].map((text) => (
+                {['Profile','Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon>
@@ -122,7 +122,7 @@ export default function TemporaryDrawer() {
             {(['left'] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
                     <Button onClick={toggleDrawer(anchor, true)}>
-                            <MenuIcon color="secondary">
+                            <MenuIcon color="secondary" className="dark:bg-black dark:text-white">
                             {anchor}
                             </MenuIcon>
                         </Button>

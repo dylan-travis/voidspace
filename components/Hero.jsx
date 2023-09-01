@@ -11,8 +11,8 @@ const Hero = () => {
   
   return (
   <div className="hero my-5 text-center">
-    <h1 className="text-8xl font-bold">Voidspace</h1>
-    <p className="text-2xl p-8">Hourly studio rentals in Los Angeles.</p>
+    <h1 className="text-8xl font-bold dark:text-white">Voidspace</h1>
+    <p className="text-2xl p-8 dark:text-white">Hourly studio rentals in Los Angeles.</p>
     <div className="flex flex-col items-center">
     {status === 'unauthenticated' && (
             <Button

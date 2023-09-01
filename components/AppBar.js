@@ -8,8 +8,8 @@ import NavBar from './NavBar';
 
 export default function ButtonAppBar() {
     return (
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
+            <Box sx={{ flexGrow: 1 }} className="dark:bg-black">
+                <AppBar position="static" className="dark:bg-black">
                     <Toolbar>
                         <Drawer />
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
