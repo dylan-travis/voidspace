@@ -98,7 +98,7 @@ export default function Calendar({ bookings, cart, username }) {
         end: endOfMonth(firstDayCurrentMonth),
     });
 
-    async function fetchUpdatedBookings(userId) {
+    async function fetchUpdatedBookings() {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + `/api/getBookings`;
             const response = await fetch(apiUrl);
@@ -154,6 +154,7 @@ export default function Calendar({ bookings, cart, username }) {
          mergedData = updatedCart
         }
         setAllBookings(mergedData);
+        console.log("Merged data: " + JSON.stringify(mergedData));
         setFilteredBookings(
             mergedData.filter((meeting) =>
                 isSameDay(parseISO(meeting.bookingDate), selectedDay)
@@ -178,6 +179,11 @@ export default function Calendar({ bookings, cart, username }) {
 
         updateCalendarState();
     }, []);
+
+    useEffect(() => {
+        updateCalendarState();
+    }, [selectedDay]); // This will trigger when selectedDay changes.
+    
 
     // Functions for navigating the calendar
     function previousMonth() {
@@ -244,7 +250,7 @@ export default function Calendar({ bookings, cart, username }) {
                                 >
                                     <button
                                         type="button"
-                                        onClick={() => setSelectedDay(day)}
+                                        onClick={() => {setSelectedDay(day);}}
                                         className={classNames(
                                             isEqual(day, selectedDay) && 'text-white',
                                             !isEqual(day, selectedDay) &&

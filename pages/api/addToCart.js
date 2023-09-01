@@ -7,7 +7,6 @@ export default async (req, res) => {
     const client = await clientPromise;
     const db = client.db("test");
     const {
-      _id,
       userId,
       bookingDate,
       bookingHour,
@@ -26,6 +25,7 @@ export default async (req, res) => {
 
     // Generate a unique ProductId using MongoDB's ObjectId
     const productId = new ObjectId().toString();
+    const _id = new ObjectId().toString();
 
     const cartItem = {
       _id,
