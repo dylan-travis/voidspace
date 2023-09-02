@@ -14,6 +14,7 @@ module.exports = {
   theme: {
     extend: {},
     screens: {
+      xxs: "320px",
       xs: "480px",
       sm: "640px",
       med: "768px",
