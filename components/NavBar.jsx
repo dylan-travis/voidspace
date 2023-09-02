@@ -4,7 +4,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Logout';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import { signOut, signIn, useSession } from "next-auth/react"
+import { signOut, signIn, useSession } from "next-auth/react";
 
 
 const NavBar = () => {
@@ -17,27 +17,16 @@ const NavBar = () => {
       <div className="flex flex-wrap items-center justify-between md:mx-auto p-4 dark:bg-gray-900">
         <div className="flex md:order-2 dark:bg-gray-900">
           {/* Login/Logout/Profile buttons */}
-          {status === 'authenticated' && (
-            <>
-          {/* <Link href="/profile"><AccountBoxIcon href="/profile" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent justify-end dark:bg-gray-900"></AccountBoxIcon></Link> */}
           <Link href="/cart"><ShoppingCartIcon type="link" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent justify-end dark:bg-gray-900" title="Cart">Cart</ShoppingCartIcon></Link>
-          </>)}
-          {status === 'unauthenticated' && (
             <LoginIcon
               type="button"
-              className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent justify-end dark:bg-gray-900"
+              className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent justify-end dark:bg-gray-900 dark:text-white"
               title="Login"
               onClick={() => signIn()}
             >
               Login
             </LoginIcon>
-          )}
-          {status === 'authenticated' && (
-            <LogoutIcon
-              type="button"
-              className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent justify-end dark:bg-gray-900"
-              title="Logout"
-              onClick={() => signOut()}>Logout</LogoutIcon>)}
+          
 
         </div>
         <div className="hidden w-full md:block md:w-auto dark:bg-gray-900" id="navbar-default">

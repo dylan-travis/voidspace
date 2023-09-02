@@ -60,8 +60,8 @@ export default function TemporaryDrawer() {
             'Contact': '/contact',
             'Profile': '/profile',
             'Cart': '/cart',
-            'Login': '/login',
-            'Logout': '/logout'
+            'Login': '/api/auth/signin',
+            'Logout': '/api/auth/signout'
             };
 
               
@@ -106,7 +106,7 @@ export default function TemporaryDrawer() {
                 {['Login'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon>
+                            <ListItemIcon className="dark:bg-gray-900 dark:text-white">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
