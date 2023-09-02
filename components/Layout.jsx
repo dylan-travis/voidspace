@@ -13,6 +13,12 @@ const Layout = ({ children }) => (
   <Container maxWidth="md" className="dark:bg-gray-900">
     <Head>
       <title>Voidspace</title>
+      <meta property="og:title" content="Voidspace" />
+      <meta property="og:description" content="Hourly studio bookings in Los Angeles" />
+      <meta property="og:image" content="" />
+      <meta property="og:url" content="http://voidspace.vercel.app" />
+      <meta property="og:type" content="website" />
+
     </Head>
     <ButtonAppBar position="static" className="dark:bg-gray-900"><NavBar className="dark:bg-gray-900" /></ButtonAppBar>
     <main id="app" className="md:container md:mx-auto dark:bg-gray-900" data-testid="layout">
