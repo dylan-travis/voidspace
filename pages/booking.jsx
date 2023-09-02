@@ -29,17 +29,6 @@ export async function getServerSideProps(context) {
     try {
       const session = await getSession(context);
   
-      if (!session || !session.user) {
-        // Handle the case where the user is not authenticated
-        // You can redirect them to the login page or handle it as needed
-        return {
-          redirect: {
-            destination: '/login', // Redirect to the login page
-            permanent: false,
-          },
-        };
-      }
-  
       const userId = session.user.id;
       const username = session.user.username;
       const userEmail = session.user.email;
@@ -203,8 +192,8 @@ export default function Calendar({ bookings, cart, username }) {
     return (
         <div>
             <h1 className="text-center text-4xl font-bold pt-5 pb-5">Booking</h1>
-            <div className="max-w-md px-4 mx-auto sm:px-7 md:max-w-4xl md:px-6">
-                <div className="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
+            <div className="max-w-xl px-4 mx-auto sm:px-7 sm:max-w-4xl sm:px-6">
+                <div className="sm:grid sm:grid-cols-2 sm:divide-x sm:divide-gray-200">
                     <div className="md:pr-14">
                         <div className="flex items-center dark:text-white">
                             <h2 className="flex-auto font-semibold text-gray-900 dark:text-white">

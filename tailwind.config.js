@@ -13,6 +13,14 @@ module.exports = {
   darkMode: 'media',
   theme: {
     extend: {},
+    screens: {
+      xs: "480px",
+      sm: "640px",
+      med: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      xxl: "1536px",
+    }
   },
   plugins: [
     require("flowbite/plugin")
