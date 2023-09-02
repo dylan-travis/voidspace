@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
       // Fetch user data from MongoDB using the user ID and add it to the session
       if (user && user.id) {
         const foundUser = await findUserById(user.id);
+        console.log(foundUser + "foundUser")
         if (foundUser) {
           session.user = { ...session.user, ...foundUser };
         }
