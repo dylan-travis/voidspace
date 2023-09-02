@@ -28,14 +28,7 @@ function classNames(...classes) {
 export async function getServerSideProps(context) {
     try {
       const session = await getSession(context);
-        if (!session) {
-            return {
-                redirect: {
-                    destination: '/',
-                    permanent: false,
-                },
-            };
-        }
+
       const userId = session.user.id;
       const username = session.user.username;
       const userEmail = session.user.email;
