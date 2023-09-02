@@ -11,8 +11,8 @@ const Hero = () => {
   
   return (
   <div className="hero my-5 text-center">
-    <h1 className="text-8xl font-bold dark:text-white">Voidspace</h1>
-    <p className="text-2xl p-8 dark:text-white">Hourly studio rentals in Los Angeles.</p>
+    <h1 className="xl:text-8xl lg:text-6xl sm:text-5xl font-bold dark:text-white">Voidspace</h1>
+    <p className="xl:text-4xl lg:text-2xl sm:text-xl p-8 dark:text-white">Hourly studio rentals in Los Angeles.</p>
     <div className="flex flex-col items-center">
     {status === 'authenticated' ? (
   <Button
@@ -28,7 +28,7 @@ const Hero = () => {
     variant="contained"
     color="primary"
     type="button"
-    className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent justify-end dark:bg-gray-700"
+    className="dark:bg-gray-700 dark:text-white"
     title="Login"
     onClick={() => signIn()}
   >
