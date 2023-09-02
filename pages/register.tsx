@@ -1,47 +1,39 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { useSession, signOut } from "next-auth/react"
-
+import axios from 'axios'; // Import Axios for making HTTP requests
 
 interface RegisterFormData {
-  name: string;
+  firstName: string;
   lastName: string;
   email: string;
-  password: string;
-  confirmPassword: string;
   phoneNumber: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
   photo: File | null;
 }
 
+export async function getServerSideProps(context) {
+  const req = context.req
+  const res = context.res
+  let username = getCookie('username', { req, res });
+  if (username != undefined){
+      return {
+          redirect: {
+              permanent: false,
+              destination: "/"
+          }
+      }
+  }
+  return { props: {username:false} };
+};
+
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<RegisterFormData>({
-    name: '',
+    firstName: '',
     lastName: '',
     email: '',
-    password: '',
-    confirmPassword: '',
     phoneNumber: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: '',
     photo: null,
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -51,36 +43,50 @@ const RegisterPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission and user creation in the MongoDB database
-    console.log(formData);
+    
+    try {
+      // Make an API request to your server to create the user
+      console.log(formData)
+      const response = await axios.post('/api/registerUser', formData);
+
+      // Handle the API response as needed
+      console.log('User registration response:', response.data);
+      
+      // Optionally, you can redirect the user to another page after successful registration
+      // Router.push('/success'); // Import Router from 'next/router'
+    } catch (error) {
+      console.error('Error registering user:', error);
+      // Handle errors and display error messages to the user
+    }
   };
+  const router = useRouter()
+  const { msg } = router.body
 
   return (
     <>
       <h1 className="mb-4 text-4xl font-bold text-center text-gray-900 dark:text-white pt-5">Register</h1>
-      <form action="#" className="space-y-8">
+      <form action="/api/registerUser" method="POST" className="space-y-8">
         <div>
           <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Name:</label>
-          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="John" onSubmit={handleSubmit} value={formData.name}/>
+          <input type="text" id="firstName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="John"/>
         </div>
         <div>
           <label htmlFor="lastName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Last Name:</label>
-          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Doe" onSubmit={handleSubmit} value={formData.lastName}/>
+          <input type="text" id="lastName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Doe"/>
         </div>
         <div>
           <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email:</label>
-          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="john@doe.com" onSubmit={handleSubmit} value={formData.email}/>
+          <input type="text" id="email"  className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="john@doe.com"/>
         </div>
         <div>
           <label htmlFor="phoneNumber" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Phone:</label>
-          <input className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="888-888-8888" onSubmit={handleSubmit} value={formData.phoneNumber}/>
+          <input type="text" id="phoneNumber" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="888-888-8888"/>
         </div>
-        {/* Other form fields */}
         <div>
           <label htmlFor="photo" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Driver's License Photo:</label>
-          <Button variant="contained" color="primary" component="label">
+          <Button variant="contained" className="dark:bg-gray-700 dark:text-white" component="label">
             Upload File
             <input
               type="file"
@@ -91,7 +97,7 @@ const RegisterPage: React.FC = () => {
             />
           </Button>
         </div>
-        <Button variant="contained" color="primary" endIcon={<SendIcon />}>Register</Button>
+        <Button type="submit" variant="contained" className="dark:bg-gray-700 dark:text-white" endIcon={<SendIcon />}>Submit</Button>
       </form>
     </>
   );

@@ -294,7 +294,7 @@ export default function Calendar({ bookings, cart, username }) {
                                 {format(selectedDay, 'MMM dd, yyy')}
                             </time>
                         </h2>
-                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500 dark:text-white dark:bg-black">
+                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500 dark:text-white dark:bg-gray-900">
                             {/* here is where we loop over the meetings */}
                             {filteredBookings.length > 0 ? (
                                 filteredBookings.map((meeting) => (
@@ -369,7 +369,7 @@ function Meeting({ meeting, handleDeleteMeeting, username }) {
             <img
                 src="/blacksquare.jpg"
                 alt=""
-                className="flex-none w-10 h-10 rounded-full"
+                className="flex-none w-10 h-10 dark:bg-gray-900"
             />
             <div className="flex-auto">
                 <p className="text-gray-900 dark:text-white">

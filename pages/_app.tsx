@@ -14,16 +14,19 @@ const theme = createTheme({
   palette: {
     primary: {
       light: 'white',
-      main: '#000',
+      main: '#FFF dark:#000',
       dark: '#000',
       contrastText: '#000',
     },
     secondary: {
       light: 'blue',
-      main: 'blue',
+      main: 'black dark:white',
       dark: 'blue',
       contrastText: '#FFF',
-    }
+    },
+    background: {
+      paper: 'dark:bg-gray-900',
+    },
   },
 });
 

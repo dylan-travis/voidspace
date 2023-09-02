@@ -72,12 +72,13 @@ export default function TemporaryDrawer() {
             role="presentation"
             onClick={toggleDrawer(anchor, false)}
             onKeyDown={toggleDrawer(anchor, false)}
+            className="dark:bg-gray-900"
         >
             <List>
                 {['Home', 'Booking', 'Contact', ].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon>
+                            <ListItemIcon className="dark:text-white">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -85,13 +86,13 @@ export default function TemporaryDrawer() {
                     </ListItem>
                 ))}
             </List>
-            <Divider />
+            <Divider className="dark:text-white" />
             {status === 'authenticated' && (
             <List>
-                {['Profile','Cart', 'Logout'].map((text) => (
+                {['Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon>
+                            <ListItemIcon className="dark:text-white">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -118,11 +119,11 @@ export default function TemporaryDrawer() {
     );
 
     return (
-        <div>
+        <div className="dark:bg-gray-900">
             {(['left'] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
                     <Button onClick={toggleDrawer(anchor, true)}>
-                            <MenuIcon color="secondary" className="dark:bg-black dark:text-white">
+                            <MenuIcon color="secondary" className="dark:bg-gray-900 dark:text-white">
                             {anchor}
                             </MenuIcon>
                         </Button>
@@ -130,6 +131,8 @@ export default function TemporaryDrawer() {
                         anchor={anchor}
                         open={state[anchor]}
                         onClose={toggleDrawer(anchor, false)}
+                        className="dark:bg-gray-900"
+                        sx = {{color: "dark:bg-gray-900"}}
                     >
                         {list(anchor)}
                     </Drawer>

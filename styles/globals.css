@@ -6,7 +6,7 @@
 
 @layer base {
     body {
-        @apply dark:bg-black
+        @apply dark:bg-gray-900
     }
     text {
         @apply dark:text-white
@@ -24,7 +24,7 @@
         @apply dark:bg-white
     }
     div {
-        @apply dark:bg-black
+        @apply dark:bg-gray-900
     }
     h1, h2, h3 {
         @apply dark:text-white
