@@ -7,25 +7,30 @@ import React from "react"
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from "@emotion/react"; 
 import dotenv from 'dotenv';
+import CssBaseline from '@mui/material/CssBaseline';
 
 dotenv.config();
 
 const theme = createTheme({
   palette: {
     primary: {
-      light: 'white',
-      main: '#FFF dark:#000',
-      dark: '#000',
+      light: '#37474f',
+      main: 'rgb(17 24 39)',
+      dark: '#37474f',
       contrastText: '#000',
     },
     secondary: {
-      light: 'blue',
-      main: 'black dark:white',
-      dark: 'blue',
+      light: '#ffffff',
+      main: '#ffffff',
+      dark: '#ffffff',
       contrastText: '#FFF',
     },
+    text:{
+      primary: "#FFFFFF"
+    },
     background: {
-      paper: 'dark:bg-gray-900',
+      default: 'rgb(31 41 55)',
+      paper: 'rgb(75 85 99)',
     },
   },
 });
@@ -39,6 +44,7 @@ export default function App({
   return (
     <SessionProvider session={session}>
     <ThemeProvider theme={theme}>
+    <CssBaseline />
       <Layout>
       <Component {...pageProps} />
       </Layout>

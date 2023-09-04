@@ -10,7 +10,7 @@ import { ThemeProvider } from '@mui/material/styles';
 
 
 const Layout = ({ children }) => (
-  <Container maxWidth="md" className="dark:bg-gray-900">
+  <Container maxWidth="md" className="">
     <Head>
       <title>Voidspace</title>
       <meta property="og:title" content="Voidspace" />
@@ -20,8 +20,8 @@ const Layout = ({ children }) => (
       <meta property="og:type" content="website" />
 
     </Head>
-    <ButtonAppBar position="static" className="dark:bg-gray-900"><NavBar className="dark:bg-gray-900" /></ButtonAppBar>
-    <main id="app" className="md:container md:mx-auto dark:bg-gray-900" data-testid="layout">
+    <ButtonAppBar position="static" className=""><NavBar className="" /></ButtonAppBar>
+    <main id="app" className="md:container md:mx-auto " data-testid="layout">
       <div className="md:container md:mx-auto">{children}</div>
       <Footer />
     </main>

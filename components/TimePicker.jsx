@@ -185,21 +185,14 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                 (booking) => bookingDateFormatted(booking.bookingDate) === bookingSelectedDayFormatted(selectedDay) && booking.bookingHour === hour
             );
             return (
-                <Button
+                <button
                     key={(hour)}
                     onClick={() => handleHourClick(hour)}
                     disabled={isBooked}
-                    variant="contained"
-                    className="dark:text-white dark:bg-gray-500"
-                    sx={{
-                        "&.Mui-disabled": {
-                          background: "dark:bg-gray-700",
-                          color: "white"
-                        }
-                      }}
+                    className="disabled:text-gray-700 disabled:hover:bg-red-500 bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-gray-300 hover:border-transparent rounded"
                 >
                     {americanHours}
-                </Button>
+                </button>
             );
         });
     };
@@ -213,36 +206,34 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                 {renderHoursButtons()}
             </div>
             {isModalOpen && (
-                <Box>
-                    <div className="fixed inset-0 flex items-center justify-center dark:bg-gray-900">
-                        <div ref={modalRef} className="bg-white dark:bg-gray-700 p-4 shadow-lg rounded">
+                <Box className="bg-gray-900">
+                    <div className="fixed inset-0 flex items-center justify-center">
+                        <div ref={modalRef} className="bg-gray-700 dark:bg-gray-700 p-4 shadow-lg rounded">
                             <form onSubmit={handleBookingSubmit}>
                                 <div>
-                                    <div className="bg-slate-200 dark:bg-gray-900 shadow-lg border-solid rounded ">
+                                    <div className="bg-gray-600  shadow-lg border-solid rounded ">
                                         <h2 className="text-xl font-bold mb-4 text-center">Book the Studio:</h2>
-                                        <p className="text-med italic dark:bg-gray-900 text-center">{formatHoursTo12HourClock(selectedHour)}-{formatHoursTo12HourClock(selectedHour + 2)} </p>
-                                        <p className="text-med italic dark:bg-gray-900 mb-4 text-center">{format(new Date(selectedDay), 'dd MMMM, yyyy')}</p>
-                                        <input type="checkbox" className="ml-4 dark:bg-gray-900 dark:text-white" checked={includeEngineer} onChange={(e) => setIncludeEngineer(e.target.checked)}></input> <span className="text-sm italic text-center dark:text-white">Include an engineer ($50/hr)
+                                        <p className="text-med italic  text-center">{formatHoursTo12HourClock(selectedHour)}-{formatHoursTo12HourClock(selectedHour + 2)} </p>
+                                        <p className="text-med italic  mb-4 text-center">{format(new Date(selectedDay), 'dd MMMM, yyyy')}</p>
+                                        <input type="checkbox" className="ml-4  " checked={includeEngineer} onChange={(e) => setIncludeEngineer(e.target.checked)}></input> <span className="text-sm italic text-center ">Include an engineer ($50/hr)
                                         </span></div>
-                                    <label htmlFor="description" className="dark:text-white">Comments:</label>
-                                    <textarea id="description" className="shadow-sm dark:bg-gray-900 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
+                                    <label htmlFor="description" className="">Comments:</label>
+                                    <textarea id="description" className="shadow-sm  bg-gray-400 border border-gray-300 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
                                 </div>
                                 <div className="flex justify-end mt-4">
-                                    <Button
+                                    <button
                                         type="button"
                                         onClick={() => setIsModalOpen(false)}
-                                        variant="contained"
-                                        className="dark:text-white dark:bg-gray-500"
-                                    >
+                                        className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+                                        >
                                         Cancel
-                                    </Button>
-                                    <Button
+                                    </button>
+                                    <button
                                         type="submit"
-                                        variant="contained"
-                                        className="dark:text-white dark:bg-gray-500"
-                                    >
+                                        className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+                                        >
                                         Add to Cart
-                                    </Button>
+                                    </button>
                                 </div>
                             </form>
                         </div>

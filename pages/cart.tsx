@@ -125,10 +125,10 @@ export async function getServerSideProps(context) {
                 <title>My Shopping Cart | Voidspace</title>
             </Head>
             {/* Main Div */}
-            <div className="container xl:max-w-screen-xl mx-auto py-12 px-6 dark:text-white">
+            <div className="container xl:max-w-screen-xl mx-auto py-12 px-6 ">
             {cartDetails && Object.keys(cartDetails).length && (
                     <>
-                        <h2 className="text-4xl font-semibold text-center dark:text-white">Your shopping cart</h2>
+                        <h2 className="text-4xl font-semibold text-center ">Your shopping cart</h2>
                     </>)}
                 {/* Product Banner */}
                 <div className="mt-12">
@@ -139,8 +139,8 @@ export async function getServerSideProps(context) {
                         >
                             {/* Image + Name */}
 
-                            <a className="flex items-center space-x-4 group dark:text-white">
-                                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform dark:text-white">
+                            <a className="flex items-center space-x-4 group ">
+                                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform ">
                                     <Image
                                         src="/blacksquare.jpg"
                                         alt={product.productName}
@@ -148,14 +148,14 @@ export async function getServerSideProps(context) {
                                         height={80}
                                     />
                                 </div>
-                                <p className="font-semibold text-xl group-hover:underline dark:text-white">
+                                <p className="font-semibold text-xl group-hover:underline ">
                                     {product.productName}
                                 </p>
-                                <p className="text-gray-500 dark:text-white italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
+                                <p className="text-gray-500  italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
 
                             </a>
                             {/* Quantity */}
-                            <div className="flex items-center space-x-3 dark:text-white">
+                            <div className="flex items-center space-x-3 ">
                                 {/* Price */}
                                 <p className="font-semibold text-xl ml-16">
 
@@ -176,19 +176,22 @@ export async function getServerSideProps(context) {
                 {/* Checkout and Clear Buttons */}
                      {cartDetails && Object.keys(cartDetails).length != 0 && (
                     <div className="pt-8 text-center">
-                        <Button
-                            variant="contained" color="primary" 
+                        <button
+                            className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
                             onClick={redirectToCheckout}
                         >
                             Checkout
-                        </Button>
-                        <Button variant="contained" color="primary" >
+                        </button>
+                        <button
+                          className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+
+                        >
                             Clear all
-                        </Button>
+                        </button>
                     </div>)}
                     {cartDetails == null && (
                     <>
-                        <h2 className="text-4xl font-semibold pb-8 dark:text-white">
+                        <h2 className="text-4xl font-semibold pb-8 ">
                             Your shopping cart is empty.
                         </h2>
                         <p className="mt-1 text-xl">

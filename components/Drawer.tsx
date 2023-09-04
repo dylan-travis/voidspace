@@ -72,13 +72,13 @@ export default function TemporaryDrawer() {
             role="presentation"
             onClick={toggleDrawer(anchor, false)}
             onKeyDown={toggleDrawer(anchor, false)}
-            className="dark:bg-gray-900"
+            className=""
         >
             <List>
                 {['Home', 'Contact', ].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon className="dark:text-white">
+                            <ListItemIcon className="">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -86,13 +86,13 @@ export default function TemporaryDrawer() {
                     </ListItem>
                 ))}
             </List>
-            <Divider className="dark:text-white" />
+            <Divider className="" />
             {status === 'authenticated' && (
             <List>
                 {['Booking', 'Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon className="dark:text-white">
+                            <ListItemIcon className="">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -106,7 +106,7 @@ export default function TemporaryDrawer() {
                 {['Login'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon className="dark:bg-gray-900 dark:text-white">
+                            <ListItemIcon className=" ">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -119,11 +119,11 @@ export default function TemporaryDrawer() {
     );
 
     return (
-        <div className="dark:bg-gray-900">
+        <div className="">
             {(['left'] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
                     <Button onClick={toggleDrawer(anchor, true)}>
-                            <MenuIcon color="secondary" className="dark:bg-gray-900 dark:text-white">
+                            <MenuIcon color="secondary" className=" ">
                             {anchor}
                             </MenuIcon>
                         </Button>
@@ -131,8 +131,8 @@ export default function TemporaryDrawer() {
                         anchor={anchor}
                         open={state[anchor]}
                         onClose={toggleDrawer(anchor, false)}
-                        className="dark:bg-gray-900"
-                        sx = {{color: "dark:bg-gray-900"}}
+                        className=""
+                        sx = {{color: ""}}
                     >
                         {list(anchor)}
                     </Drawer>
