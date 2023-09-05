@@ -20,65 +20,138 @@ import { Fragment, useState, useEffect } from 'react'
 import TimePicker from '../components/TimePicker'
 import { useSession, getSession } from "next-auth/react"
 
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 // Grabs bookings from DB
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
     try {
-        const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getBookings"
-        let response = await fetch(apiUrl);
-        const bookings = await response.json();
-        // console.log(bookings)
-        return { props: { bookings } };
+      const session = await getSession(context);
+
+      const userId = session.user.id;
+      const username = session.user.username;
+      const userEmail = session.user.email;
+        
+      // Fetch bookings if available, or set to an empty array if not
+      let bookings = [];
+      const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getBookings";
+      const response = await fetch(apiUrl);
+  
+      if (response.ok) {
+        const bookingsObj = await response.json();
+        if (Array.isArray(bookingsObj) && bookingsObj.length > 0) {
+          // Check if bookingsObj is an array with at least one element
+          bookings = bookingsObj[0].items;
+        }
+      }
+  
+      // Fetch cart data
+      const getCartUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/createCart";
+      const cartResponse = await fetch(getCartUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, username, userEmail }),
+      });
+  
+      const cartJson = await cartResponse.json();
+      if (cartJson.items == undefined) {
+        const cart = [];
+        return { props: { session, username, bookings, cart, userId } };
+      } else {
+        const cart = cartJson.items;
+        return { props: { session, username, bookings, cart, userId } };
+      }
     } catch (e) {
-        console.error(e);
+      console.error(e);
     }
-}
-
-
+  }
+  
+  
 
 // Displays calendar and booked appointments
-export default function Calendar({ bookings }) {
-    const { data: session, status } = useSession()
+export default function Calendar({ bookings, cart, username }) {
     let today = startOfToday()
+    const { data: session, status } = useSession()
     let [selectedDay, setSelectedDay] = useState(today)
     const [filteredBookings, setFilteredBookings] = useState([]);
     const [allBookings, setAllBookings] = useState([]);
     let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'))
-    let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date())
     const [bookedHours, setBookedHours] = useState([]);
+    let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date())
 
     let days = eachDayOfInterval({
         start: firstDayCurrentMonth,
         end: endOfMonth(firstDayCurrentMonth),
     });
 
-    // Updates Calendar state from Timepicker - establishes a connection between the two components in order to show new meetings as they are created.
-    async function updateCalendarState(response) {
-        // Logic to update the state in the Calendar component
-        // Update the bookings state with the new meeting from the response (if available)
-        if (response) {
-            let newResponseApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings';
-            let newResponse = await fetch(newResponseApiUrl);
-            const updatedBookings = await newResponse.json();
-            // Add the new meeting to the existing allBookings array using spread operator
-            setAllBookings([...allBookings, updatedBookings]);
-            // Takes the updatedBookings array and filters it to only show the meetings that match the selected day
-            // console.log("All Bookings is now: " + JSON.stringify(allBookings))
-            setFilteredBookings(updatedBookings.filter((meeting) =>
-                isSameDay(parseISO(meeting.bookingDate), selectedDay)));
-            setBookedHours([...bookedHours, ...updatedBookings.map((booking) => booking.bookingHour)])
-        }
-        else {
-            setFilteredBookings(bookings.filter((meeting) =>
-                isSameDay(parseISO(meeting.bookingDate), selectedDay)));
-
-            logBookings(bookings, selectedDay);
+    async function fetchUpdatedBookings() {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + `/api/getBookings`;
+            const response = await fetch(apiUrl);
+            if (response.ok) {
+                let updatedBookings = [];
+                const updatedBookingsJson = await response.json();
+                const updatedBookingsMap = updatedBookingsJson.map((booking) => booking.items);
+                if (updatedBookingsMap.length > 0) {
+                updatedBookings = updatedBookingsMap;
+                }
+                updatedBookings = updatedBookings.flat();
+                return updatedBookings;
+            } else {
+                throw new Error('Failed to fetch updated bookings');
+            }
+        } catch (error) {
+            console.error('Error fetching updated bookings:', error);
+            throw error;
         }
     }
+    
+    // Define a function to fetch updated cart data
+    async function fetchUpdatedCart(userId) {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + `/api/getCart?userId=${userId}`;
+            const response = await fetch(apiUrl);
+            if (response.ok) {
+                const cartItems = await response.json();
+                let updatedCart = [];
+                if (cartItems.items) {
+                updatedCart = cartItems.items;
+            }
+                return updatedCart;
+            } else {
+                throw new Error('Failed to fetch updated cart');
+            }
+        } catch (error) {
+            console.error('Error fetching updated cart:', error);
+            throw error;
+        }
+    }
+
+    // Updates Calendar state from Timepicker - establishes a connection between the two components in order to show new meetings as they are created.
+    async function updateCalendarState() {
+        // Fetch updated bookings and cart data here
+        const updatedBookings = await fetchUpdatedBookings(session.user.id, username);
+        const updatedCart = await fetchUpdatedCart(session.user.id, username);
+        let mergedData = [];
+        if (updatedBookings.length >= 1) {
+         mergedData = [...updatedBookings, ...updatedCart];}
+        else {
+         mergedData = updatedCart
+        }
+        setAllBookings(mergedData);
+        setFilteredBookings(
+            mergedData.filter((meeting) =>
+                isSameDay(parseISO(meeting.bookingDate), selectedDay)
+            )
+        );
+        setBookedHours(
+            mergedData.map((booking) => booking.bookingHour)
+        );
+    }
+    
 
     // Deletes meeting from DB
     const handleDeleteMeeting = (bookingId) => {
@@ -86,25 +159,17 @@ export default function Calendar({ bookings }) {
             prevBookings.filter((meeting) => meeting._id !== bookingId)
         );
     };
-
-    // Filtering logic for bookings goes here - looks at the selected day and pulls all meetings that match that day. This is the setFilteredBookings object.
-    async function logBookings() {
-        try {
-            const allBookings = bookings;
-            const selectedDayBookings = bookings.filter((meeting) =>
-                isSameDay(parseISO(meeting.bookingDate), selectedDay)
-            );
-            setAllBookings(allBookings);
-            setFilteredBookings(selectedDayBookings);
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    
     // Note that logBookings is asynchronously called in several locations in this file. This is because we need to wait for the bookings to be fetched from the DB before we can filter them.
     useEffect(() => {
 
-        logBookings();
-    }, [selectedDay]);
+        updateCalendarState();
+    }, []);
+
+    useEffect(() => {
+        updateCalendarState();
+    }, [selectedDay]); // This will trigger when selectedDay changes.
+    
 
     // Functions for navigating the calendar
     function previousMonth() {
@@ -127,17 +192,17 @@ export default function Calendar({ bookings }) {
     return (
         <div>
             <h1 className="text-center text-4xl font-bold pt-5 pb-5">Booking</h1>
-            <div className="max-w-md px-4 mx-auto sm:px-7 md:max-w-4xl md:px-6">
-                <div className="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
+            <div className="max-w-xl px-4 mx-auto sm:px-7 sm:max-w-4xl sm:px-6">
+                <div className="sm:grid sm:grid-cols-2 sm:divide-x sm:divide-gray-200">
                     <div className="md:pr-14">
-                        <div className="flex items-center">
-                            <h2 className="flex-auto font-semibold text-gray-900">
+                        <div className="flex items-center ">
+                            <h2 className="flex-auto font-semibold text-white ">
                                 {format(firstDayCurrentMonth, 'MMMM yyyy')}
                             </h2>
                             <button
                                 type="button"
                                 onClick={previousMonth}
-                                className="-my-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                                className="-my-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 "
                             >
                                 <span className="sr-only">Previous month</span>
                                 <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
@@ -145,13 +210,13 @@ export default function Calendar({ bookings }) {
                             <button
                                 onClick={nextMonth}
                                 type="button"
-                                className="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                                className="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 "
                             >
                                 <span className="sr-only">Next month</span>
                                 <ChevronRightIcon className="w-5 h-5" aria-hidden="true" />
                             </button>
                         </div>
-                        <div className="grid grid-cols-7 mt-10 text-xs leading-6 text-center text-gray-500">
+                        <div className="grid grid-cols-7 mt-10 text-xs leading-6 text-center text-gray-300 ">
                             <div>S</div>
                             <div>M</div>
                             <div>T</div>
@@ -160,7 +225,7 @@ export default function Calendar({ bookings }) {
                             <div>F</div>
                             <div>S</div>
                         </div>
-                        <div className="grid grid-cols-7 mt-2 text-sm">
+                        <div className="grid grid-cols-7 mt-2 text-sm ">
                             {days.map((day, dayIdx) => (
                                 <div
                                     key={day.toString()}
@@ -171,7 +236,7 @@ export default function Calendar({ bookings }) {
                                 >
                                     <button
                                         type="button"
-                                        onClick={() => setSelectedDay(day)}
+                                        onClick={() => {setSelectedDay(day);}}
                                         className={classNames(
                                             isEqual(day, selectedDay) && 'text-white',
                                             !isEqual(day, selectedDay) &&
@@ -180,16 +245,16 @@ export default function Calendar({ bookings }) {
                                             !isEqual(day, selectedDay) &&
                                             !isToday(day) &&
                                             isSameMonth(day, firstDayCurrentMonth) &&
-                                            'text-gray-900',
+                                            'text-white ',
                                             !isEqual(day, selectedDay) &&
                                             !isToday(day) &&
                                             !isSameMonth(day, firstDayCurrentMonth) &&
-                                            'text-gray-400',
+                                            'text-gray-400 ',
                                             isEqual(day, selectedDay) && isToday(day) && 'bg-red-500',
                                             isEqual(day, selectedDay) &&
                                             !isToday(day) &&
-                                            'bg-gray-900',
-                                            !isEqual(day, selectedDay) && 'hover:bg-gray-200',
+                                            'bg-gray-900 dark:bg-white dark:text-black',
+                                            !isEqual(day, selectedDay) && 'hover:bg-gray-500 dark:hover:bg-gray-700',
                                             (isEqual(day, selectedDay) || isToday(day)) &&
                                             'font-semibold',
                                             'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
@@ -212,17 +277,17 @@ export default function Calendar({ bookings }) {
                         </div>
                     </div>
                     <section className="mt-12 md:mt-0 md:pl-14">
-                        <h2 className="font-semibold text-gray-900">
+                        <h2 className="font-semibold text-white pl-2">
                             Bookings for{' '}
                             <time dateTime={format(selectedDay, 'yyyy-MM-dd')}>
                                 {format(selectedDay, 'MMM dd, yyy')}
                             </time>
                         </h2>
-                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
+                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-300  ">
                             {/* here is where we loop over the meetings */}
                             {filteredBookings.length > 0 ? (
                                 filteredBookings.map((meeting) => (
-                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting._id} updateCalendarState={updateCalendarState} />
+                                    <Meeting meeting={meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting.key} updateCalendarState={updateCalendarState} username={username} />
                                 ))
                             ) : (
                                 <p>No bookings today.</p>
@@ -232,18 +297,17 @@ export default function Calendar({ bookings }) {
                     </section>
                 </div>
             </div>
-            <TimePicker selectedDay={selectedDay} updateCalendarState={updateCalendarState} bookings={bookings} bookedHours={bookedHours} setBookedHours={setBookedHours} filteredBookings={filteredBookings} />
+            <TimePicker selectedDay={selectedDay} updateCalendarState={updateCalendarState} bookings={bookings} cart={cart} bookedHours={bookedHours} setBookedHours={setBookedHours} filteredBookings={filteredBookings} />
         </div>
     )
 }
 
 // Displays Meetings within the calendar
-function Meeting({ meeting, handleDeleteMeeting }) {
+function Meeting({ meeting, handleDeleteMeeting, username }) {
     let startDateTime = parseISO(meeting.bookingDate)
     let endDateTime = parseISO(meeting.endBookingDate)
     let bookingHourStart = formatHoursTo12HourClock(meeting.bookingHour)
     let bookingHourEnd = formatHoursTo12HourClock(meeting.endBookingHour)
-
     const handleDeleteBooking = async (bookingId) => {
         const deleteBookingApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/deleteBooking';
         try {
@@ -290,14 +354,28 @@ function Meeting({ meeting, handleDeleteMeeting }) {
     }
 
     return (
-        <li key={meeting._id} className="flex items-center px-4 py-2 space-x-4 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-100">
+        <li key={meeting._id} className="flex items-center px-4 py-2 space-x-4 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
             <img
                 src="/blacksquare.jpg"
                 alt=""
-                className="flex-none w-10 h-10 rounded-full"
+                className="flex-none w-10 h-10 "
             />
             <div className="flex-auto">
-                <p className="text-gray-900">{meeting.username} {meeting.confirmed ? <span className="italic text-green-500"> (confirmed)</span> : <span className="italic text-red-600"> (unconfirmed)</span>}</p>
+                <p className="text-white ">
+                    {meeting.username === username ? (
+                        <>
+                        {meeting.username}
+                        {meeting.confirmed ? (
+                            <span className="italic text-green-500"> (confirmed)</span>
+                        ) : (
+                            <span className="italic text-red-600"> (unconfirmed)</span>
+                        )}
+                        </>
+                    ) : (
+                        // Display a placeholder name if the user doesn't match
+                        'Booked'
+                    )}
+                </p>    
                 <p className="mt-0.5">
                     <time dateTime={meeting.startDatetime}>
                         {bookingHourStart}
@@ -309,7 +387,8 @@ function Meeting({ meeting, handleDeleteMeeting }) {
 
                 </p>
             </div>
-            <Menu
+            {/* 3 dot menu currently deactivated /*}
+            {/* <Menu
                 as="div"
                 className="relative opacity-0 focus-within:opacity-100 group-hover:opacity-100"
             >
@@ -352,7 +431,7 @@ function Meeting({ meeting, handleDeleteMeeting }) {
                         </div>
                     </Menu.Items>
                 </Transition>
-            </Menu>
+            </Menu> */}
         </li>
     )
 }

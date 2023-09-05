@@ -16,10 +16,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
+import { signOut, signIn, useSession } from "next-auth/react"
+
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export default function TemporaryDrawer() {
+    const { data: session, status } = useSession()
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -57,8 +60,8 @@ export default function TemporaryDrawer() {
             'Contact': '/contact',
             'Profile': '/profile',
             'Cart': '/cart',
-            'Login': '/login',
-            'Logout': '/logout'
+            'Login': '/api/auth/signin',
+            'Logout': '/api/auth/signout'
             };
 
               
@@ -69,12 +72,13 @@ export default function TemporaryDrawer() {
             role="presentation"
             onClick={toggleDrawer(anchor, false)}
             onKeyDown={toggleDrawer(anchor, false)}
+            className=""
         >
             <List>
-                {['Home', 'Booking', 'Contact', 'Profile'].map((text) => (
+                {['Home', 'Contact', ].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon>
+                            <ListItemIcon className="">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -82,12 +86,13 @@ export default function TemporaryDrawer() {
                     </ListItem>
                 ))}
             </List>
-            <Divider />
+            <Divider className="" />
+            {status === 'authenticated' && (
             <List>
-                {['Cart', 'Login', 'Logout'].map((text) => (
+                {['Booking', 'Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon>
+                            <ListItemIcon className="">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -95,15 +100,30 @@ export default function TemporaryDrawer() {
                     </ListItem>
                 ))}
             </List>
+            )}
+            {status === 'unauthenticated' && (
+            <List>
+                {['Login'].map((text) => (
+                    <ListItem key={text} disablePadding>
+                        <ListItemButton href={linkMapping[text]}>
+                            <ListItemIcon className=" ">
+                                {iconMapping[text]}
+                            </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
+            )}
         </Box>
     );
 
     return (
-        <div>
+        <div className="">
             {(['left'] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
                     <Button onClick={toggleDrawer(anchor, true)}>
-                            <MenuIcon color="secondary">
+                            <MenuIcon color="secondary" className=" ">
                             {anchor}
                             </MenuIcon>
                         </Button>
@@ -111,6 +131,8 @@ export default function TemporaryDrawer() {
                         anchor={anchor}
                         open={state[anchor]}
                         onClose={toggleDrawer(anchor, false)}
+                        className=""
+                        sx = {{color: ""}}
                     >
                         {list(anchor)}
                     </Drawer>

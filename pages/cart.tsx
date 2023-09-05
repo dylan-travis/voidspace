@@ -8,7 +8,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@mui/material';
-import CheckoutForm from '../components/CheckoutForm';
 import {
     add,
     eachDayOfInterval,
@@ -23,53 +22,67 @@ import {
     parseISO,
     startOfToday,
 } from 'date-fns'
-import { useSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
 import formatHoursTo12HourClock from '../utils/24hr';
 
 let cartDetails = {}
     
-export async function getServerSideProps() {
-        try {
-            const cartApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/api/getBookings'
-            const response = await fetch(cartApiUrl);
-            const bookings = await response.json();
-            console.log(bookings)
-            // console.log(bookings)
-            return { props: { bookings } };
-        } catch (e) {
-            console.error(e);
-        }
-    }
-    
-
-const Cart = ({bookings}) => {
-    const [redirecting, setRedirecting] = useState(false);
-    const { data: session } = useSession()
-    const [cartDetails, setCartDetails] = useState(bookings); // Store the cart items in state
-
-    if (session) {
-        const userId = session.user.id;
-    }
-
-    async function removeItem(product, quantity) {
-        // console.log("remove " + JSON.stringify(product, quantity));
-    
-        try {
-          await fetch(`/api/deleteBooking?_id=${product._id}`, {
-            method: "DELETE"
-          });
-          
-          // If the item is successfully deleted from the backend, remove it from the cartDetails state.
-          setCartDetails((prevCartDetails) => {
-            const updatedCart = { ...prevCartDetails };
-            delete updatedCart[product._id];
-            return updatedCart;
-          });
-          
-        } catch (error) {
-          console.error(error);
-        }
+export async function getServerSideProps(context) {
+    try {
+      const session = await getSession(context);
+      
+      if (!session || !session.user) {
+        // Handle the case where the user is not authenticated
+        // You can redirect them to the login page or handle it as needed
+        return {
+          redirect: {
+            destination: '/login', // Redirect to the login page
+            permanent: false,
+          },
+        };
       }
+      
+      const userId = session.user.id;
+      const cartApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + `/api/getCart?userId=${userId}`;
+      const response = await fetch(cartApiUrl);
+  
+      if (!response.ok) {
+        // Handle the case where the API request was not successful
+        throw new Error(`Failed to fetch cart data: ${response.statusText}`);
+      }
+  
+      const cart = await response.json();
+      let items = null;
+      if(cart.items){items = cart.items;} else {cartDetails = {};}
+  
+      return { props: { cart, items, userId } };
+    } catch (e) {
+      console.error(e);
+      // Handle the error and still return an object with props
+      return { props: { error: 'An error occurred' } };
+    }
+  }    
+
+  const Cart = ({ cart, items, userId }) => {
+    const [redirecting, setRedirecting] = useState(false);
+    const { data: session } = useSession();
+    const [cartDetails, setCartDetails] = useState(items);
+  
+    async function removeItem(userId, key) {
+      try {
+        await fetch(`/api/deleteFromCart?userId=${userId}&key=${key}`, {
+          method: "DELETE"
+        });
+  
+        // If the item is successfully deleted from the backend, update cartDetails without the deleted product.
+        setCartDetails((prevCartDetails) => {
+          const updatedCart = prevCartDetails.filter((product) => product.key !== key);
+          return updatedCart;
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
     const redirectToCheckout = async () => {
         // Create Stripe checkout
@@ -109,25 +122,25 @@ const Cart = ({bookings}) => {
     return (
         <>
             <Head>
-                <title>My Shopping Cart | Figueroa Studios</title>
+                <title>My Shopping Cart | Voidspace</title>
             </Head>
             {/* Main Div */}
-            <div className="container xl:max-w-screen-xl mx-auto py-12 px-6">
-            {Object.keys(cartDetails).length != 0 && (
+            <div className="container xl:max-w-screen-xl mx-auto py-12 px-6 ">
+            {cartDetails && Object.keys(cartDetails).length && (
                     <>
-                        <h2 className="text-4xl font-semibold text-center">Your shopping cart</h2>
+                        <h2 className="text-4xl font-semibold text-center ">Your shopping cart</h2>
                     </>)}
                 {/* Product Banner */}
                 <div className="mt-12">
-                    {Object.entries(cartDetails).map(([key, product]) => (
+                    {cartDetails && Object.entries(cartDetails).map(([key, product]) => (
                         <div
                             key={key}
                             className="flex justify-between space-x-4 hover:shadow-lg hover:border-opacity-50 border border-opacity-0 rounded-md p-4"
                         >
                             {/* Image + Name */}
 
-                            <a className="flex items-center space-x-4 group">
-                                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform">
+                            <a className="flex items-center space-x-4 group ">
+                                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform ">
                                     <Image
                                         src="/blacksquare.jpg"
                                         alt={product.productName}
@@ -135,14 +148,14 @@ const Cart = ({bookings}) => {
                                         height={80}
                                     />
                                 </div>
-                                <p className="font-semibold text-xl group-hover:underline">
+                                <p className="font-semibold text-xl group-hover:underline ">
                                     {product.productName}
                                 </p>
                                 <p className="text-gray-500  italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
 
                             </a>
                             {/* Quantity */}
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-3 ">
                                 {/* Price */}
                                 <p className="font-semibold text-xl ml-16">
 
@@ -151,7 +164,7 @@ const Cart = ({bookings}) => {
 
                                 {/* Remove item */}
                                 <button
-                                    onClick={() => removeItem(product, product.quantity)}
+                                    onClick={() => removeItem(userId, product.key)}
                                     className="ml-4 hover:text-rose-500"
                                 >
                                     <DeleteIcon className="w-6 h-6 flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity" />
@@ -161,21 +174,24 @@ const Cart = ({bookings}) => {
                     ))}
                 </div>
                 {/* Checkout and Clear Buttons */}
-                     {Object.keys(cartDetails).length != 0 && (
+                     {cartDetails && Object.keys(cartDetails).length != 0 && (
                     <div className="pt-8 text-center">
-                        <Button
-                            variant="contained" color="primary" 
+                        <button
+                            className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
                             onClick={redirectToCheckout}
                         >
                             Checkout
-                        </Button>
-                        <Button variant="contained" color="primary" >
+                        </button>
+                        <button
+                          className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+
+                        >
                             Clear all
-                        </Button>
+                        </button>
                     </div>)}
-                {Object.keys(cartDetails).length == 0 && (
+                    {cartDetails == null && (
                     <>
-                        <h2 className="text-4xl font-semibold pb-8">
+                        <h2 className="text-4xl font-semibold pb-8 ">
                             Your shopping cart is empty.
                         </h2>
                         <p className="mt-1 text-xl">
@@ -184,10 +200,11 @@ const Cart = ({bookings}) => {
 
                             </Link>
                         </p>
-                    </>
-                )}
+                    </>)}
+                
             </div>
-        </>)
+            </>
+        );
 };     
         
 

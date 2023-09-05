@@ -5,12 +5,11 @@ export default async (req, res) => {
     try {
         const client = await clientPromise;
         const db = client.db("bookings");
-        const { id } = req.query;
-        const { title, content } = req.body;
+        const { userId, title, content } = req.body;
 
         const booking = await db.collection("bookings").updateOne(
             {
-                _id: ObjectId(id),
+                _id: ObjectId(userId),
             },
             {
                 $set: {

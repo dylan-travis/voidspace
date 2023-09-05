@@ -3,7 +3,8 @@ import { format } from 'date-fns';
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { useSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
+import { v4 as uuidv4 } from 'uuid';
 
 
 const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, setBookedHours, filteredBookings }) => {
@@ -12,13 +13,13 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
     const [selectedHour, setSelectedHour] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [meetings, setMeetings] = useState([]);
-    // let [bookedHours, setBookedHours] = useState([]);
     const { data: session } = useSession()
     const [updatedBookings, setUpdatedBookings] = useState([])
+    const [cart, setCart] = useState([]);
+    const [includeEngineer, setIncludeEngineer] = useState(false);
+
     // Create a ref to hold the reference of the modal container
     const modalRef = useRef(null);
-
-    console.log(filteredBookings)
 
     // Function to handle click outside the modal
     const handleOutsideClick = (e) => {
@@ -27,32 +28,39 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
         }
     };
 
-
     // useEffect to initialize the updatedBookings state with the initial bookings data
     useEffect(() => {
         const bookedHoursSet = new Set(); // Using a Set to avoid duplicates
-
-        bookings.forEach((booking) => {
-            const { bookingDate, bookingHour } = booking;
-            bookedHoursSet.add({ date: bookingDate, hour: bookingHour });
+        const cartItems = []
+        cart.forEach((item) => {
+            cartItems.push(item);
+          });
+        const mergedArray = [...cartItems, ...bookings];
+        mergedArray.forEach((booking) => {
+            const { bookingDate, bookingHour, confirmed } = booking;
+            bookedHoursSet.add({ date: bookingDate, hour: bookingHour, confirmed: confirmed });
         });
 
         setBookedHours(Array.from(bookedHoursSet));
         setUpdatedBookings(Array.from(bookedHoursSet));
-        console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
     }, [bookings, setBookedHours]);
 
     // useEffect to update the updatedBookings state whenever the bookings prop changes
     useEffect(() => {
         const bookedHoursSet = new Set();
-
-        bookings.forEach((booking) => {
-            const { bookingDate, bookingHour } = booking;
-            bookedHoursSet.add({ date: bookingDate, hour: bookingHour });
+        const cartItems = []
+        cart.forEach((item) => {
+            cartItems.push(item);
+          });
+        const mergedArray = [...cartItems, ...bookings];
+        mergedArray.forEach((booking) => {
+            const { bookingDate, bookingHour, confirmed } = booking;
+            bookedHoursSet.add({ date: bookingDate, hour: bookingHour, confirmed: confirmed });
         });
-
+        // console.log("bookedHoursSet: " + JSON.stringify(Array.from(bookedHoursSet)));
         setUpdatedBookings(Array.from(bookedHoursSet));
-    }, [bookings]); 1
+    }, [bookings, cart]);
+
     // Add click event listener when the modal opens
     useEffect(() => {
         if (isModalOpen) {
@@ -87,38 +95,63 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
+        const uniqueKey = uuidv4();
         try {
-            const timePickerApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/addBooking";
+            const timePickerApiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/addToCart";
+            const withEngineer = includeEngineer;
+            let withEngineerBody = JSON.stringify({
+                userId: session.user.id,
+                id: session.user.id,
+                username: session.user.username,
+                bookingDate: selectedDay,
+                bookingHour: selectedHour,
+                endBookingHour: selectedHour + 2,
+                endBookingDate: selectedDay,
+                imgUrl: "/blacksquare.jpg",
+                date: Date.now(),
+                confirmed: false,
+                productName: "Two Hours with Engineer",
+                price: "price_1NleGuK1A3hq7BalHOpwdQqU",
+                productPrice: 110,
+                quantity: 1,
+                key: uniqueKey,
+                engineer: includeEngineer, // Include engineer in the request
+            });
+            let withoutEngineerBody = JSON.stringify({
+                userId: session.user.id,
+                id: session.user.id,
+                username: session.user.username,
+                bookingDate: selectedDay,
+                bookingHour: selectedHour,
+                endBookingHour: selectedHour + 2,
+                endBookingDate: selectedDay,
+                imgUrl: "/blacksquare.jpg",
+                date: Date.now(),
+                confirmed: false,
+                productName: "Two Hours",
+                price: "price_1NQcKtK1A3hq7BalXT5wvjyv",
+                productPrice: 60,
+                quantity: 1,
+                key: uniqueKey,
+                engineer: includeEngineer, // No engineer
+            });
             let response = await fetch(timePickerApiUrl, {
                 method: "POST",
-                body: JSON.stringify({
-                    id: session.user.id,
-                    username: session.user.username,
-                    bookingDate: selectedDay,
-                    bookingHour: selectedHour,
-                    endBookingHour: selectedHour + 2,
-                    endBookingDate: selectedDay,
-                    imgUrl: "/blacksquare.jpg",
-                    date: Date.now(),
-                    confirmed: false,
-                    productName: "Two Hours",
-                    price: "price_1NQcKtK1A3hq7BalXT5wvjyv",
-                    productPrice: 60,
-                    quantity: 1
-
-                }),
+                body: withEngineer ? withEngineerBody : withoutEngineerBody,
                 headers: {
                     Accept: "application/json, text/plain, */*",
                     "Content-Type": "application/json",
                 },
+                
             });
             response = await response.json();
-            console.log("response from handleBookingSubmit" + JSON.stringify(response))
+
+            // Update the cart state by creating a new array with the new item
+            setCart((prevCart) => [...cart, response]);
+
             // Invoke the updateCalendarState prop to trigger the state update in the Calendar component
             setIsModalOpen(false);
             updateCalendarState(response);
-            console.log("Bookings object is now: " + JSON.stringify(bookings))
-            console.log("Filtered bookings is now: " + JSON.stringify(filteredBookings))
         } catch (errorMessage) {
             console.error(errorMessage);
         }
@@ -152,15 +185,14 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                 (booking) => bookingDateFormatted(booking.bookingDate) === bookingSelectedDayFormatted(selectedDay) && booking.bookingHour === hour
             );
             return (
-                <Button
+                <button
                     key={(hour)}
-                    className={`${isBooked ? 'disabled bg-gray-300 hover:bg-gray-300' : ''}`}
                     onClick={() => handleHourClick(hour)}
                     disabled={isBooked}
-                    variant="contained"
+                    className="disabled:text-gray-700 disabled:hover:bg-red-500 bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-gray-300 hover:border-transparent rounded"
                 >
                     {americanHours}
-                </Button>
+                </button>
             );
         });
     };
@@ -174,35 +206,34 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                 {renderHoursButtons()}
             </div>
             {isModalOpen && (
-                <Box>
+                <Box className="bg-gray-900">
                     <div className="fixed inset-0 flex items-center justify-center">
-                        <div ref={modalRef} className="bg-white p-4 shadow-lg rounded">
+                        <div ref={modalRef} className="bg-gray-700 dark:bg-gray-700 p-4 shadow-lg rounded">
                             <form onSubmit={handleBookingSubmit}>
                                 <div>
-                                    <div className="bg-slate-200 shadow-lg border-solid rounded ">
+                                    <div className="bg-gray-600  shadow-lg border-solid rounded ">
                                         <h2 className="text-xl font-bold mb-4 text-center">Book the Studio:</h2>
                                         <p className="text-med italic  text-center">{formatHoursTo12HourClock(selectedHour)}-{formatHoursTo12HourClock(selectedHour + 2)} </p>
-                                        <p className="text-med italic mb-4 text-center">{format(new Date(selectedDay), 'dd MMMM, yyyy')}</p>
-                                        <input type="checkbox" className="ml-4"></input> <span className="text-sm italic text-center">Include an engineer ($50/hr)
+                                        <p className="text-med italic  mb-4 text-center">{format(new Date(selectedDay), 'dd MMMM, yyyy')}</p>
+                                        <input type="checkbox" className="ml-4  " checked={includeEngineer} onChange={(e) => setIncludeEngineer(e.target.checked)}></input> <span className="text-sm italic text-center ">Include an engineer ($50/hr)
                                         </span></div>
-                                    <label htmlFor="description">Comments:</label>
-                                    <textarea id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
+                                    <label htmlFor="description" className="">Comments:</label>
+                                    <textarea id="description" className="shadow-sm  bg-gray-400 border border-gray-300 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" />
                                 </div>
                                 <div className="flex justify-end mt-4">
-                                    <Button
+                                    <button
                                         type="button"
                                         onClick={() => setIsModalOpen(false)}
-                                        variant="contained"
-                                    >
+                                        className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+                                        >
                                         Cancel
-                                    </Button>
-                                    <Button
+                                    </button>
+                                    <button
                                         type="submit"
-                                        variant="contained"
-                                        color="primary"
-                                    >
+                                        className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+                                        >
                                         Add to Cart
-                                    </Button>
+                                    </button>
                                 </div>
                             </form>
                         </div>

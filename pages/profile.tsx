@@ -83,7 +83,7 @@ function Profile() {
     return (
       <>
         <div>
-          <h1 className="mb-4 text-4xl font-bold text-center text-gray-900 dark:text-white pt-5">Update Profile</h1>
+          <h1 className="mb-4 text-4xl font-bold text-center text-gray-900  pt-5">Update Profile</h1>
           <FormControl fullWidth>
             <TextField fullWidth required label="Name" id="Name" onChange={handleNameChange} value={username} className="mb-5"/>
             <TextField fullWidth required label="Email" id="Email" onChange={handleEmailChange} value={email}  className="mb-5"/>

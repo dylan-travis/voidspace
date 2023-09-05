@@ -5,10 +5,10 @@ export default async (req, res) => {
     try {
         const client = await clientPromise;
         const db = client.db("test");
-        const { _id } = req.query;
+        const { userId } = req.body;
 
         const booking = await db.collection("bookings").deleteOne({
-            _id: new ObjectId(_id),
+            _id: new ObjectId(userId),
         });
 
         res.json(booking);
