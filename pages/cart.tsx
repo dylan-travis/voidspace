@@ -125,7 +125,7 @@ export async function getServerSideProps(context) {
                 <title>My Shopping Cart | Voidspace</title>
             </Head>
             {/* Main Div */}
-            <div className="container xl:max-w-screen-xl mx-auto py-12 px-6 ">
+            <div className="container xl:max-w-screen-xl mx-auto px-6 ">
             {cartDetails && Object.keys(cartDetails).length && (
                     <>
                         <h2 className="text-4xl font-semibold text-center ">Your shopping cart</h2>
@@ -194,8 +194,8 @@ export async function getServerSideProps(context) {
                         <h2 className="text-4xl font-semibold pb-8 ">
                             Your shopping cart is empty.
                         </h2>
-                        <p className="mt-1 text-xl">
-                            More details below.{' '}
+                        <p className="mt-1 text-xl pb-12">
+                            Please head to our booking page to add to cart.{' '}
                             <Link href="/">
 
                             </Link>

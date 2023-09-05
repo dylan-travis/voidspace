@@ -53,7 +53,7 @@ export default function Contact() {
                 <p className="text-center">To cancel, please reach out to us via text or email. We will process your refund within 24 hours. Cancelations with less than 24 hour notice are subject to a $10 fee.</p>
                 <h3 className="mb-4 text-4xl font-bold text-center text-white  pt-5">Gear</h3>
                 <p className="text-center italic">Gear availability is subject to change. Please reach out to us if you will need something specific for your session!</p>
-                <div className="columns-3xs pt-4">
+                <div className="columns-3xs pt-4 pl-4">
                     <ul className="list-disc">
                         <li>Mac Mini 3 workstation</li>
                         <li>Ableton Live</li>
@@ -81,21 +81,21 @@ export default function Contact() {
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-white dark:text-gray-300">Your email</label>
                         <input type="email" id="email" name="email"
                         value={formData.email}
-                        onChange={handleChange} required className="shadow-sm bg-gray-50 border border-gray-300 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="john@doe.com" required></input>
+                        onChange={handleChange} required className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="john@doe.com" required></input>
                     </div>
                     <div>
                         <label htmlFor="subject" className="block mb-2 text-sm font-medium text-white dark:text-gray-300">Subject</label>
                         <input type="text" id="subject" name="subject"
                         value={formData.subject}
                         onChange={handleChange}
-                        required className="block p-3 w-full text-sm text-white bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Let us know how we can help you" required></input>
+                        required className="block p-3 w-full text-sm text-black bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Let us know how we can help you" required></input>
                     </div>
                     <div>
                         <label htmlFor="message" className="block mb-2 text-sm font-medium text-white dark:text-gray-300">Message</label>
                         <input type="text" id="message" name="message"
                         value={formData.message}
                         onChange={handleChange}
-                        required className="block p-3 w-full text-sm text-white bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Let us know how we can help you" required></input>
+                        required className="block p-3 w-full text-sm text-black bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Your message here" required></input>
                     </div>
                 <button type="submit"
                     className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"

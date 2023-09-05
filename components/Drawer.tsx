@@ -77,8 +77,8 @@ export default function TemporaryDrawer() {
             <List>
                 {['Home', 'Contact', ].map((text) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon className="">
+                        <ListItemButton href={linkMapping[text]} className="text-white">
+                            <ListItemIcon className="text-white">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
@@ -92,7 +92,7 @@ export default function TemporaryDrawer() {
                 {['Booking', 'Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon className="">
+                            <ListItemIcon className="text-white">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />
