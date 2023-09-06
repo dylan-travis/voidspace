@@ -5,11 +5,17 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Logout';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { signOut, signIn, useSession } from "next-auth/react";
-
+import { useRouter } from 'next/router';
 
 const NavBar = () => {
   const { data: session, status } = useSession()
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  const cartClick = () => {
+    const redirectTo = '/cart'; // Replace with the desired route
+    router.push(redirectTo);
+  };
 
   return (
     <nav className="">
@@ -34,16 +40,15 @@ const NavBar = () => {
           <div className="flex space-x-4 justify-end ml-auto">
             {/* Login/Cart buttons */}
             <div className="xxxs:flex xxs:flex xs:flex">
-              <Link href="/cart">
                 <ShoppingCartIcon type="button" 
-                className=""
+                className="hover:bg-gray-500 rounded"
                 color="secondary"
+                onClick={cartClick}
                 title="Cart">Cart</ShoppingCartIcon>
-              </Link>
               {status === 'unauthenticated' && (
               <LoginIcon
                 type="button"
-                className=""
+                className="hover:bg-gray-500 rounded"
                 title="Login"
                 color="secondary"
                 onClick={() => signIn()}
@@ -53,7 +58,7 @@ const NavBar = () => {
               {status === 'authenticated' && (
               <LogoutIcon
                 type="button"
-                className=""
+                className="hover:bg-gray-500 rounded"
                 title="Login"
                 color="secondary"
                 onClick={() => signOut()}
