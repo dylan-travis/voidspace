@@ -18,17 +18,17 @@ const NavBar = () => {
           <li>
             <Link 
             href="/" 
-            className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-400 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 text-base" 
+            className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base" 
             aria-current="page">Home</Link>
           </li>
           <>
             <li>
               <Link href="/booking" 
-              className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-400 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 text-base">Booking</Link>
+              className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">Booking</Link>
             </li>
           </>
           <li>
-            <Link href="/contact" className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-400 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 text-base">Contact</Link>
+            <Link href="/contact" className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">Contact</Link>
           </li>
         </ul >
           <div className="flex space-x-4 justify-end ml-auto">
@@ -40,6 +40,7 @@ const NavBar = () => {
                 color="secondary"
                 title="Cart">Cart</ShoppingCartIcon>
               </Link>
+              {status === 'unauthenticated' && (
               <LoginIcon
                 type="button"
                 className="block"
@@ -47,8 +48,18 @@ const NavBar = () => {
                 color="secondary"
                 onClick={() => signIn()}
               >
+                Logout
+              </LoginIcon>)}
+              {status === 'authenticated' && (
+              <LogoutIcon
+                type="button"
+                className="block"
+                title="Login"
+                color="secondary"
+                onClick={() => signOut()}
+              >
                 Login
-              </LoginIcon>
+              </LogoutIcon>)}
               </div>
           </div >
       </div >

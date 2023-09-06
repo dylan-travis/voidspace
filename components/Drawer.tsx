@@ -75,7 +75,7 @@ export default function TemporaryDrawer() {
             className=""
         >
             <List>
-                {['Home', 'Contact', ].map((text) => (
+                {['Home',  ].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]} className="text-white">
                             <ListItemIcon className="text-white">
@@ -89,7 +89,7 @@ export default function TemporaryDrawer() {
             <Divider className="" />
             {status === 'authenticated' && (
             <List>
-                {['Booking', 'Cart', 'Logout'].map((text) => (
+                {['Contact', 'Booking', 'Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon className="text-white">
@@ -106,7 +106,7 @@ export default function TemporaryDrawer() {
                 {['Login'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
-                            <ListItemIcon className=" ">
+                            <ListItemIcon className="text-white">
                                 {iconMapping[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} />

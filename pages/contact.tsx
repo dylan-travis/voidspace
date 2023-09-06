@@ -4,8 +4,10 @@ import SendIcon from '@mui/icons-material/Send';
 import { useSession, signOut } from "next-auth/react"
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function Contact() {
+    const router = useRouter();
 
     const { data: session, status } = useSession()
         const [formData, setFormData] = useState({
@@ -13,6 +15,12 @@ export default function Contact() {
           subject: '',
           message: '',
         });
+
+        // Function to handle login click redirection
+        const loginClick = () => {
+          const redirectTo = '/api/auth/signin'; // Replace with the desired route
+          router.push(redirectTo);
+        };
       
         const handleChange = (e) => {
           const { name, value } = e.target;
@@ -40,7 +48,18 @@ export default function Contact() {
         return <p>Loading...</p>
     }
     if (status === "unauthenticated") {
-        return <p>Unauthenticated. Please login!</p>
+        return( <div className="pt-3 text-center">
+          <h1 className="text-3xl text-center font-bold">Access Denied.</h1>
+          <p className="text-center">Please login!</p>
+          <br></br>
+          <button
+            type="button"
+            title="Login"
+            className="text-center bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+            onClick={loginClick}>
+            Login
+        </button>
+        </div>)
     }
 
     return (

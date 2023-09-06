@@ -20,7 +20,7 @@ const Hero = () => {
 
   // Function to handle login click redirection
   const loginClick = () => {
-    const redirectTo = '/api/auth/login'; // Replace with the desired route
+    const redirectTo = '/api/auth/signin'; // Replace with the desired route
     router.push(redirectTo);
   };
 
@@ -42,8 +42,7 @@ const Hero = () => {
     type="button"
     title="Login"
     className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
-    onClick={loginClick}
-  >
+    onClick={loginClick}>
     Login
   </button>
 )}

@@ -12,7 +12,7 @@ export async function getServerSideProps(context) {
       // You can redirect them to the login page or handle it as needed
       return {
         redirect: {
-          destination: '/login', // Redirect to the login page
+          destination: '/api/auth/signin', // Redirect to the login page
           permanent: false,
         },
       };

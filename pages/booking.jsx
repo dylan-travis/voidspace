@@ -1,6 +1,4 @@
 import React from 'react';
-import { Menu, Transition } from '@headlessui/react'
-import { DotsVerticalIcon } from '@heroicons/react/outline'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import {
     add,
@@ -16,9 +14,10 @@ import {
     parseISO,
     startOfToday,
 } from 'date-fns'
-import { Fragment, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import TimePicker from '../components/TimePicker'
 import { useSession, getSession } from "next-auth/react"
+import { useRouter } from 'next/router';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -26,13 +25,19 @@ function classNames(...classes) {
 
 // Grabs bookings from DB
 export async function getServerSideProps(context) {
+
     try {
       const session = await getSession(context);
+        if (!session) {
+            const authenticated = false;
+            return { props: { authenticated, session } };
+        }
 
       const userId = session.user.id;
       const username = session.user.username;
       const userEmail = session.user.email;
-        
+      const authenticated = true;
+
       // Fetch bookings if available, or set to an empty array if not
       let bookings = [];
       const apiUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getBookings";
@@ -59,10 +64,10 @@ export async function getServerSideProps(context) {
       const cartJson = await cartResponse.json();
       if (cartJson.items == undefined) {
         const cart = [];
-        return { props: { session, username, bookings, cart, userId } };
+        return { props: { authenticated, session, username, bookings, cart, userId } };
       } else {
         const cart = cartJson.items;
-        return { props: { session, username, bookings, cart, userId } };
+        return { props: { authenticated, session, username, bookings, cart, userId } };
       }
     } catch (e) {
       console.error(e);
@@ -72,7 +77,7 @@ export async function getServerSideProps(context) {
   
 
 // Displays calendar and booked appointments
-export default function Calendar({ bookings, cart, username }) {
+export default function Calendar({ authenticated, bookings, cart, username }) {
     let today = startOfToday()
     const { data: session, status } = useSession()
     let [selectedDay, setSelectedDay] = useState(today)
@@ -81,11 +86,41 @@ export default function Calendar({ bookings, cart, username }) {
     let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'))
     const [bookedHours, setBookedHours] = useState([]);
     let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date())
+    const router = useRouter();
 
     let days = eachDayOfInterval({
         start: firstDayCurrentMonth,
         end: endOfMonth(firstDayCurrentMonth),
     });
+
+    // Function to handle login click redirection
+    const loginClick = () => {
+        const redirectTo = '/api/auth/signin'; // Replace with the desired route
+        router.push(redirectTo);
+        };
+
+    if (authenticated){
+        useEffect(() => {
+            updateCalendarState();
+        }, []);
+
+        useEffect(() => {
+            updateCalendarState();
+        }, [selectedDay]);}
+    
+    if(authenticated === false) {
+        return ( <div className="pt-3 text-center">
+        <h1 className="text-3xl text-center font-bold">Access Denied.</h1>
+        <p className="text-center">Please login!</p>
+        <br></br>
+        <button
+          type="button"
+          title="Login"
+          className="text-center bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
+          onClick={loginClick}>
+          Login
+      </button>
+      </div>)}                    
 
     async function fetchUpdatedBookings() {
         try {
@@ -160,16 +195,6 @@ export default function Calendar({ bookings, cart, username }) {
         );
     };
     
-    // Note that logBookings is asynchronously called in several locations in this file. This is because we need to wait for the bookings to be fetched from the DB before we can filter them.
-    useEffect(() => {
-
-        updateCalendarState();
-    }, []);
-
-    useEffect(() => {
-        updateCalendarState();
-    }, [selectedDay]); // This will trigger when selectedDay changes.
-    
 
     // Functions for navigating the calendar
     function previousMonth() {
@@ -180,13 +205,6 @@ export default function Calendar({ bookings, cart, username }) {
     function nextMonth() {
         let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 })
         setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'))
-    }
-
-    if (status === "loading") {
-        return <p>Loading...</p>
-    }
-    if (status === "unauthenticated") {
-        return <p>Access Denied</p>
     }
 
     return (
@@ -283,7 +301,7 @@ export default function Calendar({ bookings, cart, username }) {
                                 {format(selectedDay, 'MMM dd, yyy')}
                             </time>
                         </h2>
-                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-300  ">
+                        <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-300 pl-2">
                             {/* here is where we loop over the meetings */}
                             {filteredBookings.length > 0 ? (
                                 filteredBookings.map((meeting) => (
@@ -299,6 +317,7 @@ export default function Calendar({ bookings, cart, username }) {
             </div>
             <TimePicker selectedDay={selectedDay} updateCalendarState={updateCalendarState} bookings={bookings} cart={cart} bookedHours={bookedHours} setBookedHours={setBookedHours} filteredBookings={filteredBookings} />
         </div>
+
     )
 }
 
@@ -354,7 +373,7 @@ function Meeting({ meeting, handleDeleteMeeting, username }) {
     }
 
     return (
-        <li key={meeting._id} className="flex items-center px-4 py-2 space-x-4 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+        <li key={meeting._id} className="flex items-center px-4 py-2 space-x-4 group rounded-xl focus-within:bg-gray-100 hover:bg-gray-600">
             <img
                 src="/blacksquare.jpg"
                 alt=""
