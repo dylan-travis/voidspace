@@ -4,7 +4,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import { signOut, signIn, useSession } from "next-auth/react"
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-
+import Image from 'next/image'
 
 const Hero = () => {
 
@@ -27,16 +27,16 @@ const Hero = () => {
   return (
   <div className="hero my-5 text-center">
     <h1 className="xl:text-8xl med:text-8xl sm:text-5xl xs:text-6xl xxs:text-5xl font-bold">Voidspace</h1>
-    <p className="xl:text-4xl med:text-2xl sm:text-xl xs:text-lg xxs:text-md p-8">Hourly studio rentals in Los Angeles.</p>
+    <p className="xl:text-4xl med:text-2xl sm:text-xl xs:text-lg xxs:text-md p-8 pb-4">Hourly studio rentals in East LA.</p>
     <div className="flex flex-col items-center">
+    <Image src="/voidtransparent.png" width="200" height="200"></Image>
+    <p className="italic xl:text-sm med:text-xs sm:text-xs xs:text-xs xxs:text-xs p-8 pb-4">Void the cat welcomes you...</p>
     {status === 'authenticated' ? (
   <button
     onClick={bookingClick}
     className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded">
     Booking
   </button>
-
-
 ) : (
   <button
     type="button"

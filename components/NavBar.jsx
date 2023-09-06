@@ -20,6 +20,7 @@ const NavBar = () => {
   return (
     <nav className="">
       <div className="flex items-center justify-between" id="navbar-default">
+      {status === 'authenticated' && (
         <ul className="flex space-x-4 text-white justify-start">
           <li>
             <Link 
@@ -27,6 +28,7 @@ const NavBar = () => {
             className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base" 
             aria-current="page">Home</Link>
           </li>
+          
           <>
             <li>
               <Link href="/booking" 
@@ -37,6 +39,20 @@ const NavBar = () => {
             <Link href="/contact" className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">Contact</Link>
           </li>
         </ul >
+                  )}
+      {status === 'unauthenticated' && (
+        <ul className="flex space-x-4 text-white justify-start">
+          <li>
+            <Link 
+            href="/" 
+            className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base" 
+            aria-current="page">Home</Link>
+          </li>
+          <li>
+            <Link href="/contact" className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">Contact</Link>
+          </li>
+        </ul >
+                  )}
           <div className="flex space-x-4 justify-end ml-auto">
             {/* Login/Cart buttons */}
             <div className="xxxs:flex xxs:flex xs:flex">
