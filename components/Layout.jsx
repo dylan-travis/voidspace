@@ -15,7 +15,7 @@ const Layout = ({ children }) => (
       <title>Voidspace</title>
       <meta property="og:title" content="Voidspace" />
       <meta property="og:description" content="Hourly studio bookings in Los Angeles" />
-      <meta property="og:image" content="" />
+      <meta property="og:image" content="/voidtransparent.png" />
       <meta property="og:url" content="http://voidspace.vercel.app" />
       <meta property="og:type" content="website" />
 
