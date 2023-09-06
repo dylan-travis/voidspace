@@ -36,14 +36,14 @@ const NavBar = () => {
             <div className="xxxs:flex xxs:flex xs:flex">
               <Link href="/cart">
                 <ShoppingCartIcon type="button" 
-                className="block"
+                className=""
                 color="secondary"
                 title="Cart">Cart</ShoppingCartIcon>
               </Link>
               {status === 'unauthenticated' && (
               <LoginIcon
                 type="button"
-                className="block"
+                className=""
                 title="Login"
                 color="secondary"
                 onClick={() => signIn()}
@@ -53,7 +53,7 @@ const NavBar = () => {
               {status === 'authenticated' && (
               <LogoutIcon
                 type="button"
-                className="block"
+                className=""
                 title="Login"
                 color="secondary"
                 onClick={() => signOut()}
