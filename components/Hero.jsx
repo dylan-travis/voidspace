@@ -26,7 +26,7 @@ const Hero = () => {
 
   return (
   <div className="hero my-5 text-center">
-    <h1 className="xl:text-8xl med:text-8xl sm:text-5xl xs:text-4xl xxs:text-3xl font-bold">Voidspace</h1>
+    <h1 className="xl:text-8xl med:text-8xl sm:text-5xl xs:text-6xl xxs:text-5xl font-bold">Voidspace</h1>
     <p className="xl:text-4xl med:text-2xl sm:text-xl xs:text-lg xxs:text-md p-8">Hourly studio rentals in Los Angeles.</p>
     <div className="flex flex-col items-center">
     {status === 'authenticated' ? (

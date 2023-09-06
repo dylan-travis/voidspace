@@ -21,7 +21,7 @@ const Layout = ({ children }) => (
 
     </Head>
     <ButtonAppBar position="static" className=""><NavBar className="" /></ButtonAppBar>
-    <main id="app" className="md:container md:mx-auto " data-testid="layout">
+    <main id="app" className="md:container md:mx-auto" data-testid="layout">
       <div className="md:container md:mx-auto">{children}</div>
       <Footer />
     </main>

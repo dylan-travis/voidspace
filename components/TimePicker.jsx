@@ -189,7 +189,7 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                     key={(hour)}
                     onClick={() => handleHourClick(hour)}
                     disabled={isBooked}
-                    className="disabled:text-gray-700 disabled:hover:bg-red-500 bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-gray-300 hover:border-transparent rounded"
+                    className="xxs:w-16 xs:w-16 text-center xxs:text-sm xs:text-sm disabled:text-gray-700 disabled:hover:bg-red-500 bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-gray-300 hover:border-transparent rounded"
                 >
                     {americanHours}
                 </button>

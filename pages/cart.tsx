@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import Head from 'next/head';
 import axios from 'axios';
 import getStripe from '../utils/get-stripe';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,8 +23,10 @@ import {
 } from 'date-fns'
 import { useSession, getSession } from "next-auth/react"
 import formatHoursTo12HourClock from '../utils/24hr';
+import { useRouter } from 'next/router';
 
-let cartDetails = {}
+
+let cartDetails = null;
     
 export async function getServerSideProps(context) {
     try {
@@ -84,6 +85,15 @@ export async function getServerSideProps(context) {
       }
     }
 
+    const router = useRouter();
+
+    // Function to handle booking click redirection
+    const bookingClick = () => {
+      const redirectTo = '/booking'; // Replace with the desired route
+      router.push(redirectTo);
+    };
+  
+
     const redirectToCheckout = async () => {
         // Create Stripe checkout
         const requestData = {
@@ -115,49 +125,43 @@ export async function getServerSideProps(context) {
           // using `error.message`.
           console.warn(error.message);
         };
-        
-    
 
 
     return (
-        <>
-            <Head>
-                <title>My Shopping Cart | Voidspace</title>
-            </Head>
-            {/* Main Div */}
-            <div className="container xl:max-w-screen-xl mx-auto px-6 ">
-            {cartDetails && Object.keys(cartDetails).length && (
+        <div>
+            {cartDetails && Object.keys(cartDetails).length != 0 && (
                     <>
-                        <h2 className="text-4xl font-semibold text-center ">Your shopping cart</h2>
+                        <h2 className="text-4xl font-semibold text-center pt-8">Your shopping cart</h2>
                     </>)}
                 {/* Product Banner */}
                 <div className="mt-12">
                     {cartDetails && Object.entries(cartDetails).map(([key, product]) => (
                         <div
                             key={key}
-                            className="flex justify-between space-x-4 hover:shadow-lg hover:border-opacity-50 border border-opacity-0 rounded-md p-4"
+                            className="xxs:text-sm flex justify-between space-x-4 hover:shadow-lg hover:border-opacity-50 border border-opacity-0 rounded-md p-4"
                         >
                             {/* Image + Name */}
 
-                            <a className="flex items-center space-x-4 group ">
-                                <div className="relative w-20 h-20 group-hover:scale-110 transition-transform ">
+                            <a className="flex items-center space-x-4 group">
+                                <div className="relative w-15 group-hover:scale-110 transition-transform xxs:hidden xs:hidden med:block">
                                     <Image
                                         src="/blacksquare.jpg"
                                         alt={product.productName}
+                                        className="rounded-md"
                                         width={80}
                                         height={80}
                                     />
                                 </div>
-                                <p className="font-semibold text-xl group-hover:underline ">
+                                <p className="font-semibold med:text-xl xxs:text-sm group-hover:underline ">
                                     {product.productName}
                                 </p>
-                                <p className="text-gray-500  italic">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
+                                <p className="text-gray-500 italic med:text-lg xxs:text-xs">{format(parseISO(product.bookingDate), 'dd MMMM, yyyy')}, <span className="font-semibold">{formatHoursTo12HourClock(product.bookingHour)} - {formatHoursTo12HourClock(product.endBookingHour)}</span></p>
 
                             </a>
                             {/* Quantity */}
                             <div className="flex items-center space-x-3 ">
                                 {/* Price */}
-                                <p className="font-semibold text-xl ml-16">
+                                <p className="font-semibold text-xl ml-16 xxs:ml-0">
 
                                     ${(product.productPrice)}
                                 </p>
@@ -189,21 +193,22 @@ export async function getServerSideProps(context) {
                             Clear all
                         </button>
                     </div>)}
-                    {cartDetails == null && (
-                    <>
-                        <h2 className="text-4xl font-semibold pb-8 ">
+                    {cartDetails.length == 0 && (
+                    <div className="justify-center text-center">
+                        <h2 className="med:text-4xl font-semibold pb-8 xxs:text-xl">
                             Your shopping cart is empty.
                         </h2>
-                        <p className="mt-1 text-xl pb-12">
+                        <p className="mt-1 med:text-xl pb-12 xxs:text-lg xs:text-lg">
                             Please head to our booking page to add to cart.{' '}
-                            <Link href="/">
-
-                            </Link>
                         </p>
-                    </>)}
+                            <button
+                              onClick={bookingClick}
+                              className="justify-center bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded">
+                              Booking
+                            </button>
+                    </div>)}
                 
             </div>
-            </>
         );
 };     
         
