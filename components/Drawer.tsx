@@ -78,7 +78,7 @@ export default function TemporaryDrawer() {
             className=""
         >
             <List>
-                {['Home',  ].map((text) => (
+                {['Home', 'About', 'Contact',].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]} className="text-white">
                             <ListItemIcon className="text-white">
@@ -106,7 +106,7 @@ export default function TemporaryDrawer() {
             )}
             {status === 'unauthenticated' && (
             <List>
-                {['About', 'Contact', 'Login'].map((text) => (
+                {['Login'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon className="text-white">
