@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { email, subject, message } = req.body;
+    const { email, subject, message, phone } = req.body;
 
     // Create a transporter using your email service provider (e.g., Gmail)
     const transporter = nodemailer.createTransport({
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         from: 'dylantravis99@gmail.com',
         to: 'dylantravis99@gmail.com', // Replace with the recipient's email
         subject: "VOIDSPACE CONTACT FORM " + subject,
-        text: email + message,
+        text: email + message + phone,
       });
 
       console.log('Email sent:', info.response);

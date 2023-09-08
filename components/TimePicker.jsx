@@ -111,8 +111,8 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                 date: Date.now(),
                 confirmed: false,
                 productName: "Two Hours with Engineer",
-                price: "price_1NleGuK1A3hq7BalHOpwdQqU",
-                productPrice: 110,
+                price: "price_1NoCTzK1A3hq7BalJedq70aW",
+                productPrice: 140,
                 quantity: 1,
                 key: uniqueKey,
                 engineer: includeEngineer, // Include engineer in the request
@@ -129,8 +129,8 @@ const TimePicker = ({ selectedDay, updateCalendarState, bookings, bookedHours, s
                 date: Date.now(),
                 confirmed: false,
                 productName: "Two Hours",
-                price: "price_1NQcKtK1A3hq7BalXT5wvjyv",
-                productPrice: 60,
+                price: "price_1NoCSxK1A3hq7BalaCKDbZWU",
+                productPrice: 40,
                 quantity: 1,
                 key: uniqueKey,
                 engineer: includeEngineer, // No engineer
