@@ -16,6 +16,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
+import InfoIcon from '@mui/icons-material/Info';
 import { signOut, signIn, useSession } from "next-auth/react"
 
 
@@ -47,6 +48,7 @@ export default function TemporaryDrawer() {
     const iconMapping = {
         'Home': <HomeIcon />,
         'Booking': <EditCalendarIcon />,
+        'About': <InfoIcon />,
         'Contact': <CallIcon />,
         'Profile': <AccountCircleIcon />,
         'Cart': <ShoppingCartIcon />,
@@ -57,6 +59,7 @@ export default function TemporaryDrawer() {
         const linkMapping = {
             'Home': '/',
             'Booking': '/booking',
+            'About': '/about',
             'Contact': '/contact',
             'Profile': '/profile',
             'Cart': '/cart',
@@ -89,7 +92,7 @@ export default function TemporaryDrawer() {
             <Divider className="" />
             {status === 'authenticated' && (
             <List>
-                {['Contact', 'Booking', 'Cart', 'Logout'].map((text) => (
+                {['Booking', 'Cart', 'Logout'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon className="text-white">
@@ -103,7 +106,7 @@ export default function TemporaryDrawer() {
             )}
             {status === 'unauthenticated' && (
             <List>
-                {['Login'].map((text) => (
+                {['About', 'Contact', 'Login'].map((text) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton href={linkMapping[text]}>
                             <ListItemIcon className="text-white">

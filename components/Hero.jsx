@@ -30,7 +30,7 @@ const Hero = () => {
     <p className="xl:text-4xl med:text-2xl sm:text-xl xs:text-lg xxs:text-md p-8 pb-4">Hourly studio rentals in East LA.</p>
     <div className="flex flex-col items-center">
     <Image src="/voidtransparent.png" width="200" height="200"></Image>
-    <p className="italic xl:text-sm med:text-xs sm:text-xs xs:text-xs xxs:text-xs p-8 pb-4">Void the cat welcomes you...</p>
+    <p className="italic xl:text-sm med:text-xs sm:text-xs xs:text-xs xxs:text-xs p-8 pb-4"></p>
     {status === 'authenticated' ? (
   <button
     onClick={bookingClick}

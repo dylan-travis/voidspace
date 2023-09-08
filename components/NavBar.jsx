@@ -28,13 +28,15 @@ const NavBar = () => {
             className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base" 
             aria-current="page">Home</Link>
           </li>
-          
-          <>
             <li>
               <Link href="/booking" 
               className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">Booking</Link>
             </li>
-          </>
+            <li>
+              <Link href="/about" 
+              className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">About</Link>
+            </li>
+
           <li>
             <Link href="/contact" className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">Contact</Link>
           </li>
@@ -48,6 +50,10 @@ const NavBar = () => {
             className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base" 
             aria-current="page">Home</Link>
           </li>
+          <li>
+              <Link href="/about" 
+              className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">About</Link>
+            </li>
           <li>
             <Link href="/contact" className="xxxs:hidden xxs:hidden xs:hidden sm:block py-2 pl-3 pr-4 rounded hover:bg-gray-500 md:hover:bg-transparent md:border-0 md:p-0 text-base">Contact</Link>
           </li>
