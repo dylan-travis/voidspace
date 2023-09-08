@@ -18,7 +18,7 @@ const Layout = ({ children }) => (
       <meta property="og:image" content="/voidtransparent.png" />
       <meta property="og:url" content="http://voidspace.vercel.app" />
       <meta property="og:type" content="website" />
-
+      <link rel='icon' href='/favicon.ico'/>
     </Head>
     <ButtonAppBar position="static" className=""><NavBar className="" /></ButtonAppBar>
     <main id="app" className="md:container md:mx-auto" data-testid="layout">

@@ -186,12 +186,12 @@ export async function getServerSideProps(context) {
                         >
                             Checkout
                         </button>
-                        <button
+                        {/* <button
                           className="bg-transparent hover:bg-gray-900 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded"
 
                         >
                             Clear all
-                        </button>
+                        </button> */}
                     </div>)}
                     {cartDetails.length == 0 && (
                     <div className="justify-center text-center">
