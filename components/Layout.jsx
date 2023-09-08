@@ -5,6 +5,7 @@ import Footer from './Footer';
 import Container from '@mui/material/Container';
 import ButtonAppBar from './AppBar';
 import { ThemeProvider } from '@mui/material/styles';
+import { Analytics } from '@vercel/analytics/react';
 
 
 
@@ -24,6 +25,7 @@ const Layout = ({ children }) => (
     <main id="app" className="md:container md:mx-auto" data-testid="layout">
       <div className="md:container md:mx-auto">{children}</div>
       <Footer />
+      <Analytics />
     </main>
   </Container >
 );
