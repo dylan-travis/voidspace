@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 module.exports = {
     "env": {
         "browser": true,
@@ -25,7 +23,7 @@ module.exports = {
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": "latenpm",
+        "ecmaVersion": "latest",
         "sourceType": "module"
     },
     "plugins": [
@@ -33,8 +31,5 @@ module.exports = {
         "react"
     ],
     "rules": {
-        "react/no-unescaped-entities": "off",
-        "@next/next/no-page-custom-font": "off",
-        "react/prop-types": "off",
     }
 }
